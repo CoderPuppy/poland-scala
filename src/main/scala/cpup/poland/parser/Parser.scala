@@ -3,7 +3,7 @@ package cpup.poland.parser
 import cpup.poland.runtime.userdata.{Message, MessageSeq, PSymbol, PString}
 import scala.collection.mutable
 import cpup.poland.parser.{TokenMatching => M}
-import cpup.poland.runtime.{TRuntime, PRuntime}
+import cpup.poland.runtime.TRuntime
 
 case class Parser(runtime: TRuntime) {
 	var seq = new MessageSeq
@@ -88,7 +88,7 @@ object Parser {
 				case Lexer.TokenType.ID =>
 					if(msgPossible) {
 						parser.enter(MsgMode(
-							Message(parser.runtime.createSymbol(PSymbol(tok.text)), tok.pos)
+							Message(parser.runtime.getSymbol(PSymbol(tok.text)), tok.pos)
 						))
 					} else {
 						throw ParseException("expected: whitespace, got: id, at line #{tok line}, column #{tok column}")
@@ -99,22 +99,22 @@ object Parser {
 					msgPossible = true
 
 				case Lexer.TokenType.Newline =>
-					seq.add(Message(parser.runtime.createSymbol(PSymbol(".")), tok.pos))
+					seq.add(Message(parser.runtime.getSymbol(PSymbol(".")), tok.pos))
 					msgPossible = true
 
 				case Lexer.TokenType.Reset =>
 					if(msgPossible) {
 						parser.enter(MsgMode(
-							Message(parser.runtime.createSymbol(PSymbol(".")), tok.pos)
+							Message(parser.runtime.getSymbol(PSymbol(".")), tok.pos)
 						))
 					} else {
-						seq.add(Message(parser.runtime.createSymbol(PSymbol(".")), tok.pos))
+						seq.add(Message(parser.runtime.getSymbol(PSymbol(".")), tok.pos))
 						msgPossible = true
 					}
 
 				case Lexer.TokenType.OpenParen =>
 					parser.enter(new MsgMode(
-						Message(parser.runtime.createSymbol(PSymbol("apply")), tok.pos),
+						Message(parser.runtime.getSymbol(PSymbol("apply")), tok.pos),
 						false
 					))
 					return parser.handle(tok)
@@ -153,26 +153,18 @@ object Parser {
 			true
 		}
 
-		override def enterChild(parser: Parser, child: Mode): Boolean = {
-			child match {
-				case mode: MsgMode =>
-					if(msgPossible) {
-						seq.add(mode.msg)
-					} else {
-						return false
-					}
-				case _ =>
-			}
-
-			true
-		}
-
 		override def leaveChild(parser: Parser, child: Mode){
 			child match {
 				case mode: StringMode =>
 					parser enter MsgMode(
 						Message(parser.runtime.createString(PString(mode.str)), mode.start.pos)
 					)
+
+				case mode: MsgMode =>
+					seq.add(mode.msg)
+
+				case mode: WrapperMode =>
+					seq.add(mode.msg)
 
 				case _ =>
 			}
@@ -192,8 +184,10 @@ object Parser {
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			tok.tokenType match {
 				case Lexer.TokenType.ID if inName =>
-					if(msg.name.userdata.isInstanceOf[PSymbol]) {
-						msg.name = parser.runtime.createSymbol(PSymbol(msg.name.userdata.asInstanceOf[PSymbol].text + tok.text))
+					msg.name.userdata match {
+						case symbol: PSymbol =>
+							msg.name = parser.runtime.getSymbol(PSymbol(symbol.text + tok.text))
+						case _ =>
 					}
 
 				case Lexer.TokenType.SingleQuote | Lexer.TokenType.SingleQuote if inName =>
@@ -271,7 +265,7 @@ object Parser {
 			child match {
 				case StringMode(tokenType, str) =>
 					if(inName && msg.name.userdata.isInstanceOf[PSymbol]) {
-						msg.name = parser.runtime.createSymbol(PSymbol(msg.name.userdata.asInstanceOf[PSymbol].text + str))
+						msg.name = parser.runtime.getSymbol(PSymbol(msg.name.userdata.asInstanceOf[PSymbol].text + str))
 					}
 
 				case _ =>
@@ -377,7 +371,7 @@ object Parser {
 		var first = true
 
 		override def enter(parser: Parser) {
-			msg = Message(parser.runtime.createSymbol(PSymbol(id)), start.pos)
+			msg = Message(parser.runtime.getSymbol(PSymbol(id)), start.pos)
 		}
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
@@ -388,9 +382,10 @@ object Parser {
 						parser.leave
 						parser.enter(MsgMode(msg))
 					}
+					parser.leave
 
 				case _ =>
-					parser enter ListMode(msg.args, M.MTokenType(close))
+					parser.enter(ListMode(msg.args, M.MTokenType(close)))
 					return parser.handle(tok)
 			}
 
