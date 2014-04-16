@@ -3,8 +3,9 @@ package cpup.poland.parser
 import cpup.poland.runtime.userdata.{Message, MessageSeq, PSymbol, PString}
 import scala.collection.mutable
 import cpup.poland.parser.{TokenMatching => M}
+import cpup.poland.runtime.{TRuntime, PRuntime}
 
-class Parser {
+case class Parser(runtime: TRuntime) {
 	var seq = new MessageSeq
 	val stack = new mutable.Stack[Parser.Mode]
 
@@ -54,8 +55,8 @@ class Parser {
 }
 
 object Parser {
-	def parse(tokens: Seq[Lexer.Token]) = {
-		val parser = new Parser
+	def parse(runtime: TRuntime, tokens: Seq[Lexer.Token]) = {
+		val parser = new Parser(runtime)
 		for(tok <- tokens) {
 			parser.handle(tok)
 		}
@@ -86,7 +87,9 @@ object Parser {
 			tok.tokenType match {
 				case Lexer.TokenType.ID =>
 					if(msgPossible) {
-						parser.enter(MsgMode(Message(PSymbol(tok.text))))
+						parser.enter(MsgMode(
+							Message(parser.runtime.createSymbol(PSymbol(tok.text)))
+						))
 					} else {
 						throw ParseException("expected: whitespace, got: id, at line #{tok line}, column #{tok column}")
 					}
@@ -96,19 +99,24 @@ object Parser {
 					msgPossible = true
 
 				case Lexer.TokenType.Newline =>
-					seq.add(Message(PSymbol(".")))
+					seq.add(Message(parser.runtime.createSymbol(PSymbol("."))))
 					msgPossible = true
 
 				case Lexer.TokenType.Reset =>
 					if(msgPossible) {
-						parser.enter(MsgMode(Message(PSymbol("."))))
+						parser.enter(MsgMode(
+							Message(parser.runtime.createSymbol(PSymbol(".")))
+						))
 					} else {
-						seq.add(Message(PSymbol(".")))
+						seq.add(Message(parser.runtime.createSymbol(PSymbol("."))))
 						msgPossible = true
 					}
 
 				case Lexer.TokenType.CloseParen =>
-					parser.enter(new MsgMode(Message(PSymbol("apply")), false))
+					parser.enter(new MsgMode(
+						Message(parser.runtime.createSymbol(PSymbol("apply"))),
+						false
+					))
 					return parser.handle(tok)
 
 				case Lexer.TokenType.LineCommentBegin =>
@@ -165,7 +173,9 @@ object Parser {
 		override def leaveChild(parser: Parser, child: Mode){
 			child match {
 				case mode: StringMode =>
-					parser enter MsgMode(Message(PString(mode.str)))
+					parser enter MsgMode(
+						Message(parser.runtime.createString(PString(mode.str)))
+					)
 
 				case _ =>
 			}
@@ -185,8 +195,8 @@ object Parser {
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			tok.tokenType match {
 				case Lexer.TokenType.ID =>
-					if(inName && msg.name.isInstanceOf[PSymbol]) {
-						msg.name = PSymbol(msg.name.asInstanceOf[PSymbol].text + tok.text)
+					if(inName && msg.name.userdata.isInstanceOf[PSymbol]) {
+						msg.name = parser.runtime.createSymbol(PSymbol(msg.name.userdata.asInstanceOf[PSymbol].text + tok.text))
 					}
 
 				case Lexer.TokenType.Whitespace =>
@@ -253,7 +263,7 @@ object Parser {
 		}
 
 		override def enter(parser: Parser) {
-			if(msg.name.isInstanceOf[PString]) {
+			if(msg.name.userdata.isInstanceOf[PString]) {
 				inName = false
 			}
 		}
@@ -335,11 +345,14 @@ object Parser {
 		}
 	}
 
-	case class WrapperMode(close: Lexer.TokenType, var id: String) extends Mode {
-		val msg = Message(PSymbol(id))
-		val args = msg.args
+	case class WrapperMode(close: Lexer.TokenType, id: String) extends Mode {
+		var msg: Message = null
 
 		var first = true
+
+		override def enter(parser: Parser) {
+			msg = Message(parser.runtime.createSymbol(PSymbol(id)))
+		}
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			tok.tokenType match {
@@ -351,7 +364,7 @@ object Parser {
 					}
 
 				case _ =>
-					parser enter ListMode(args, M.MTokenType(close))
+					parser enter ListMode(msg.args, M.MTokenType(close))
 					return parser.handle(tok)
 			}
 

@@ -1,6 +1,6 @@
 package cpup.poland.runtime.userdata
 
-class MessageSeq(_msgs: List[Message] = List[Message]()) extends Userdata {
+class MessageSeq(_msgs: Message*) extends Userdata {
 	def id = msgs.map(_.id).mkString(",")
 
 	var msgs = _msgs.toBuffer
@@ -12,6 +12,6 @@ class MessageSeq(_msgs: List[Message] = List[Message]()) extends Userdata {
 	override def toString = s"{ ${msgs.mkString(", ")} }"
 }
 object MessageSeq {
-	def apply(msgs: List[Message] = List[Message]()) = new MessageSeq(msgs)
+	def apply(msgs: Message*) = new MessageSeq(msgs: _*)
 	def unapply(seq: MessageSeq) = Some(seq.msgs.toList)
 }

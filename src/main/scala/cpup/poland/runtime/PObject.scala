@@ -28,6 +28,13 @@ class PObject {
 
 	var userdata: Userdata = null
 
-	val cells = new mutable.HashMap[String, PObject]
+	val slots = new mutable.HashMap[String, PObject]
 	val sources = new ListBuffer[PObject]
+
+	def apply(name: PObject) = slots(name.id)
+	def update(name: PObject, newVal: PObject) = { slots(name.id) = newVal; newVal }
+	def apply(name: Userdata) = slots(name.id)
+	def update(name: Userdata, newVal: PObject) = { slots(name.id) = newVal; newVal }
+	def apply(name: String) = slots(name)
+	def update(name: String, newVal: PObject) = { slots(name) = newVal; newVal }
 }
