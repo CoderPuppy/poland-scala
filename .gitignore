@@ -1,3 +1,6 @@
 poland-scala.iml
 poland-scala.ipr
 poland-scala.iws
+.gradle/
+build/
+out/
