@@ -3,9 +3,7 @@ package cpup.poland.runtime.userdata
 import cpup.poland.runtime.{PRuntime, PObject}
 import cpup.poland.parser.Lexer
 
-case class Send(ground: PObject, receiver: PObject, seq: MessageSeq, msg: Message) extends Userdata {
-	val runtime = PRuntime(ground)
-
+case class Send(runtime: PRuntime, ground: PObject, receiver: PObject, seq: MessageSeq, msg: Message) extends Userdata {
 	def send: PObject = receiver.receive(this)
 
 	def id = (ground.id, receiver.id, seq.id, msg.id).toString
@@ -14,7 +12,7 @@ case class Send(ground: PObject, receiver: PObject, seq: MessageSeq, msg: Messag
 object Send {
 	final val name = getClass.getName
 
-	def apply(root: PObject, receiver: PObject, name: PObject, args: PObject*): Send = {
+	def apply(runtime: PRuntime, root: PObject, receiver: PObject, name: PObject, args: PObject*): Send = {
 		val ground = root.derive
 
 		for((arg, i) <- args.view.zipWithIndex) {
@@ -28,6 +26,6 @@ object Send {
 			))
 		}).toSeq: _*)
 
-		Send(ground, receiver, MessageSeq(msg), msg)
+		Send(runtime, ground, receiver, MessageSeq(msg), msg)
 	}
 }

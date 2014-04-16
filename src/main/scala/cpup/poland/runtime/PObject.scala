@@ -1,6 +1,6 @@
 package cpup.poland.runtime
 
-import cpup.poland.runtime.userdata.{PNil, PSymbol, Send, Userdata}
+import cpup.poland.runtime.userdata.{PSymbol, Send, Userdata}
 import scala.collection.mutable
 import scala.util.Random
 import scala.collection.mutable.ListBuffer
@@ -17,7 +17,7 @@ class PObject {
 	def id = if(userdata == null) {
 		_id
 	} else {
-		(userdata.getClass.getCanonicalName, userdata.id).toString
+		userdata.objID
 	}
 	override def toString = if(userdata == null) {
 		// TODO: send
@@ -38,12 +38,27 @@ class PObject {
 		this
 	}
 
-	def apply(runtime: TRuntime, name: PObject) = slots.getOrElse(name.id, runtime.createNil(new PNil))
-	def update(name: PObject, newVal: PObject) = { slots(name.id) = newVal; newVal }
-	def apply(runtime: TRuntime, name: Userdata) = slots.getOrElse(name.id, runtime.createNil(new PNil))
-	def update(name: Userdata, newVal: PObject) = { slots(name.id) = newVal; newVal }
-	def apply(runtime: TRuntime, name: String) = slots.getOrElse(name, runtime.createNil(new PNil))
-	def update(name: String, newVal: PObject) = { slots(name) = newVal; newVal }
+	def apply(runtime: TRuntime, name: PObject): PObject = {
+		this(runtime, name.id)
+	}
+	def update(name: PObject, newVal: PObject): PObject = {
+		this(name.id) = newVal
+	}
+
+	def apply(runtime: TRuntime, name: Userdata): PObject = {
+		this(runtime, userdata.objID)
+	}
+	def update(name: Userdata, newVal: PObject): PObject = {
+		this(name.objID) = newVal
+	}
+
+	def apply(runtime: TRuntime, name: String) = {
+		slots.getOrElse(name, runtime.nil)
+	}
+	def update(name: String, newVal: PObject) = {
+		slots(name) = newVal
+		newVal
+	}
 
 	def receive(send: Send) = {
 		val obj = this(send.runtime, send.msg.name)
@@ -52,21 +67,26 @@ class PObject {
 			obj.call(send)
 		} else { obj }
 	}
-	def send(root: PObject, name: PObject, args: PObject*) = Send(root, this, name, args: _*).send
+	def send(root: PObject, runtime: PRuntime, name: PObject, args: PObject*) = {
+		Send(runtime, root, this, name, args: _*).send
+	}
+	def send(runtime: PRuntime, name: PObject, args: PObject*): PObject = {
+		send(runtime.root, runtime, name, args: _*)
+	}
 
 	def isCallable(runtime: PRuntime) = if(userdata == null) {
-		send(runtime.root, runtime.createSymbol(PSymbol("isCallable"))).toBoolean(runtime)
+		send(runtime, runtime.getSymbol(PSymbol("isCallable"))).toBoolean(runtime)
 	} else {
 		userdata.isCallable
 	}
 	def call(send: Send) = if(userdata == null) {
-		this.send(send.runtime.createSymbol(PSymbol("call")), send.runtime.createSend(send))
+		this.send(send.runtime, send.runtime.getSymbol(PSymbol("call")), send.runtime.createSend(send))
 	} else {
 		userdata.call(send)
 	}
 
 	def toBoolean(runtime: PRuntime): Boolean = if(userdata == null) {
-		send(runtime.root, runtime.createSymbol(PSymbol("toBoolean"))).toBoolean(runtime)
+		send(runtime, runtime.getSymbol(PSymbol("toBoolean"))).toBoolean(runtime)
 	} else {
 		userdata.toBoolean
 	}
