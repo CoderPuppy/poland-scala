@@ -1,0 +1,37 @@
+ext {
+	info = [
+		name: 'poland',
+		group: 'cpup.poland',
+		version: 'dev',
+		dependencies: [
+			'cpup.lib:cpup-lib:dev'
+		]
+	]
+
+	versions = [
+		scala: '2.10.3'
+	]
+}
+
+apply plugin: 'java'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	info.dependencies.each { dep ->
+		compile dep
+	}
+}
+
+apply plugin: 'scala'
+dependencies.compile "org.scala-lang:scala-library:$versions.scala"
+
+apply plugin: 'maven'
+apply plugin: 'idea'
+
+archivesBaseName = info.name
+group = info.group
+version = info.version
