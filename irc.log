@@ -1,0 +1,28 @@
+<@cpup> for a really object-oriented language to work it needs to auto save
+<@cpup> because recreating it every time is very difficult
+<@cpup> hmm
+<@cpup> not auto save but like smalltalk, saving an image and restoring it
+<@cpup> which isn't actually that difficult for most things
+<@cpup> some of those being running code and handles
+<@cpup> rawr
+<@cpup> types
+<@cpup> http://gbracha.blogspot.com/2011/06/types-are-anti-modular.html
+<@cpup> it's annoying
+<@cpup> hmm
+<@cpup> to pull methods out of classes just create a class that extends Function
+<@cpup> hmm
+<@cpup> i think i know how to make Poland work
+<@cpup> Poland being my programming language
+<@cpup> but of course to test it i need to rewrite it in another language
+<@cpup> probably Scala
+<@cpup> okay
+<@cpup> it's parsing correctly 
+<@cpup> how can NewSpeak modules be encapsulated at all
+<@cpup> they need to declare all their dependencies
+<@cpup> which is fine for his examples
+<@cpup> but only works if all the utilities you need are in the language
+<@cpup> hmm
+<@cpup> but it can't really work any other way
+<@cpup> because all the base types are parameters
+<@cpup> but there is an api for all of them
+<@cpup> otherwise they'd be unusable
