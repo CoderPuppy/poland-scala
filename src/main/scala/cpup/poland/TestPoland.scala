@@ -7,7 +7,10 @@ object TestPoland {
 	def main(args: Array[String]) {
 		println("Testing Poland (Scala Runtime)")
 		val runtime = new PRuntime(new PObject)
-		println(Parser.parse(runtime, Lexer.lex("println(\"Hello, World!\")", "test.pd")))
+		val tokens = Lexer.lex("println(\"Hello, World!\")", "test.pd")
+		val seq = Parser.parse(runtime, tokens)
+		println(s"Tokens: ${tokens}")
+		println(s"Seq: ${seq}")
 		println("Test Completed")
 	}
 }

@@ -1,8 +1,9 @@
 package cpup.poland.runtime.userdata
 
 import cpup.poland.runtime.PObject
+import cpup.poland.parser.Lexer
 
-class Message(var name: PObject, _args: List[MessageSeq] = List[MessageSeq]()) extends Userdata {
+class Message(var name: PObject, pos: Lexer.TokenPos, _args: MessageSeq*) extends Userdata {
 	def id = (name.id, args.map(_.id).mkString(",")).toString
 
 	var args = _args.toBuffer
@@ -10,6 +11,6 @@ class Message(var name: PObject, _args: List[MessageSeq] = List[MessageSeq]()) e
 	override def toString = s"${name.toString}(${args.mkString(", ")})"
 }
 object Message {
-	def apply(name: PObject, args: List[MessageSeq] = List[MessageSeq]()) = new Message(name, args)
+	def apply(name: PObject, pos: Lexer.TokenPos, args: MessageSeq*) = new Message(name, pos, args: _*)
 	def unapply(msg: Message) = Some((msg.name, msg.args.toList))
 }

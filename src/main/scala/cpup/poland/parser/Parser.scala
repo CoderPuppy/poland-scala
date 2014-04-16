@@ -88,7 +88,7 @@ object Parser {
 				case Lexer.TokenType.ID =>
 					if(msgPossible) {
 						parser.enter(MsgMode(
-							Message(parser.runtime.createSymbol(PSymbol(tok.text)))
+							Message(parser.runtime.createSymbol(PSymbol(tok.text)), tok.pos)
 						))
 					} else {
 						throw ParseException("expected: whitespace, got: id, at line #{tok line}, column #{tok column}")
@@ -99,22 +99,22 @@ object Parser {
 					msgPossible = true
 
 				case Lexer.TokenType.Newline =>
-					seq.add(Message(parser.runtime.createSymbol(PSymbol("."))))
+					seq.add(Message(parser.runtime.createSymbol(PSymbol(".")), tok.pos))
 					msgPossible = true
 
 				case Lexer.TokenType.Reset =>
 					if(msgPossible) {
 						parser.enter(MsgMode(
-							Message(parser.runtime.createSymbol(PSymbol(".")))
+							Message(parser.runtime.createSymbol(PSymbol(".")), tok.pos)
 						))
 					} else {
-						seq.add(Message(parser.runtime.createSymbol(PSymbol("."))))
+						seq.add(Message(parser.runtime.createSymbol(PSymbol(".")), tok.pos))
 						msgPossible = true
 					}
 
-				case Lexer.TokenType.CloseParen =>
+				case Lexer.TokenType.OpenParen =>
 					parser.enter(new MsgMode(
-						Message(parser.runtime.createSymbol(PSymbol("apply"))),
+						Message(parser.runtime.createSymbol(PSymbol("apply")), tok.pos),
 						false
 					))
 					return parser.handle(tok)
@@ -132,17 +132,14 @@ object Parser {
 					// TODO: backtracking
 					lastWasSlash = true
 
-				case Lexer.TokenType.DoubleQuote =>
-					parser enter StringMode(Lexer.TokenType.DoubleQuote)
-
-				case Lexer.TokenType.SingleQuote =>
-					parser.enter(StringMode(Lexer.TokenType.SingleQuote))
+				case Lexer.TokenType.DoubleQuote | Lexer.TokenType.SingleQuote =>
+					parser enter StringMode(tok)
 
 				case Lexer.TokenType.OpenSquare =>
-					parser enter WrapperMode(Lexer.TokenType.CloseSquare, "[]")
+					parser enter WrapperMode(tok, Lexer.TokenType.CloseSquare, "[]")
 
 				case Lexer.TokenType.OpenCurly =>
-					parser enter WrapperMode(Lexer.TokenType.CloseCurly, "{}")
+					parser enter WrapperMode(tok, Lexer.TokenType.CloseCurly, "{}")
 
 				case _ =>
 					parser.leave
@@ -174,7 +171,7 @@ object Parser {
 			child match {
 				case mode: StringMode =>
 					parser enter MsgMode(
-						Message(parser.runtime.createString(PString(mode.str)))
+						Message(parser.runtime.createString(PString(mode.str)), mode.start.pos)
 					)
 
 				case _ =>
@@ -194,18 +191,20 @@ object Parser {
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			tok.tokenType match {
-				case Lexer.TokenType.ID =>
-					if(inName && msg.name.userdata.isInstanceOf[PSymbol]) {
+				case Lexer.TokenType.ID if inName =>
+					if(msg.name.userdata.isInstanceOf[PSymbol]) {
 						msg.name = parser.runtime.createSymbol(PSymbol(msg.name.userdata.asInstanceOf[PSymbol].text + tok.text))
 					}
 
-				case Lexer.TokenType.Whitespace =>
-					if(!inArgs) {
-						parser.leave
-						return parser.handle(tok)
-					} else {
-						inName = false
-					}
+				case Lexer.TokenType.SingleQuote | Lexer.TokenType.SingleQuote if inName =>
+					parser.enter(StringMode(tok))
+
+				case Lexer.TokenType.Whitespace if inArgs =>
+					inName = false
+
+				case Lexer.TokenType.Whitespace if !inArgs =>
+					parser.leave
+					return parser.handle(tok)
 
 				case Lexer.TokenType.Newline =>
 					if(inName) {
@@ -267,6 +266,17 @@ object Parser {
 				inName = false
 			}
 		}
+
+		override def leaveChild(parser: Parser, child: Mode) {
+			child match {
+				case StringMode(tokenType, str) =>
+					if(inName && msg.name.userdata.isInstanceOf[PSymbol]) {
+						msg.name = parser.runtime.createSymbol(PSymbol(msg.name.userdata.asInstanceOf[PSymbol].text + str))
+					}
+
+				case _ =>
+			}
+		}
 	}
 
 	class LineCommentMode extends Mode {
@@ -301,14 +311,30 @@ object Parser {
 		}
 	}
 
-	case class StringMode(tokenType: Lexer.TokenType, var str: String = "") extends Mode {
+	case class StringMode(start: Lexer.Token, var str: String = "") extends Mode {
+		var lastWasBackslash = false
+		final val tokenType = start.tokenType
+
 		def handle(parser: Parser, tok: Lexer.Token) = {
 			tok.tokenType match {
+				case Lexer.TokenType.Backslash =>
+					if(lastWasBackslash) {
+						str += tok.text
+					} else {
+						lastWasBackslash = true
+					}
+
 				case `tokenType` =>
-					parser.leave
+					if(!lastWasBackslash) {
+						parser.leave
+					}
 
 				case _ =>
 					str += tok.text
+			}
+
+			if(tok.tokenType != Lexer.TokenType.Backslash) {
+				lastWasBackslash = false
 			}
 
 			true
@@ -345,13 +371,13 @@ object Parser {
 		}
 	}
 
-	case class WrapperMode(close: Lexer.TokenType, id: String) extends Mode {
+	case class WrapperMode(start: Lexer.Token, close: Lexer.TokenType, id: String) extends Mode {
 		var msg: Message = null
 
 		var first = true
 
 		override def enter(parser: Parser) {
-			msg = Message(parser.runtime.createSymbol(PSymbol(id)))
+			msg = Message(parser.runtime.createSymbol(PSymbol(id)), start.pos)
 		}
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {

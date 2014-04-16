@@ -10,5 +10,6 @@ trait TBaseRuntime extends TRuntime {
 	override def createMessage(msg: Message) = msg.createObject
 	override def createString(str: PString) = str.createObject
 	override def createSymbol(sym: PSymbol) = sym.createObject
+	override def createNil(nil: PNil) = nil.createObject
 }
 object BaseRuntime extends TBaseRuntime
