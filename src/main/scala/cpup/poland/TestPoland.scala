@@ -7,11 +7,10 @@ object TestPoland {
 	def main(args: Array[String]) {
 		println("Testing Poland (Scala Runtime)")
 
-		val (root, ground) = RootGround.create
-		println(s"Root: $root")
+		val ground = RootGround.create
 		println(s"Ground: $ground")
 
-		val runtime = new PRuntime(root)
+		val runtime = PRuntime(ground)
 		println(s"Runtime: $runtime")
 
 		val tokens = Lexer.lex("println(\"Hello, World!\")", "test.pd")
