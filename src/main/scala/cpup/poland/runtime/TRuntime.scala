@@ -4,16 +4,16 @@ import cpup.poland.runtime.userdata._
 import scala.collection.mutable
 
 trait TRuntime {
+	def root: PObject
 	def nil: PObject
 
-	def createSymbol(sym: PSymbol): PObject
+	def createSymbol(ground: PObject, sym: PSymbol): PObject
 
-	val symbols = new mutable.HashMap[String, PObject]()
-	def getSymbol(sym: PSymbol) = symbols.getOrElseUpdate(sym.text, createSymbol(sym))
-	def getSymbol(sym: String): PObject = getSymbol(PSymbol(sym))
+	def getSymbol(ground: PObject, sym: PSymbol) = ground.symbols.getOrElseUpdate(sym.text, createSymbol(ground, sym))
+	def getSymbol(ground: PObject, sym: String): PObject = getSymbol(ground, PSymbol(sym))
 
-	def createString(str: PString): PObject
-	def createMessage(msg: Message): PObject
-	def createMessageSeq(seq: MessageSeq): PObject
-	def createSend(send: Send): PObject
+	def createString(ground: PObject, str: PString): PObject
+	def createMessage(ground: PObject, msg: Message): PObject
+	def createMessageSeq(ground: PObject, seq: MessageSeq): PObject
+	def createSend(ground: PObject, send: Send): PObject
 }

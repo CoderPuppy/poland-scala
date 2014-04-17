@@ -21,7 +21,7 @@ object Send {
 
 		val msg = new Message(name, Lexer.TokenPos(s"$name:sendobjs", 1, 1, 1), args.view.zipWithIndex.map((e) => {
 			MessageSeq(Message(
-				PSymbol(s"$name:sendobjs:${e._2}").createObject,
+				PSymbol(s"$name:sendobjs:${e._2}").createObject(runtime),
 				Lexer.TokenPos(s"$name:sendobjs", 1, 1, 1)
 			))
 		}).toSeq: _*)

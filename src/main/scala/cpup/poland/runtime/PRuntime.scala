@@ -4,49 +4,56 @@ import cpup.poland.runtime.userdata._
 import cpup.poland.runtime.userdata.PString
 import cpup.poland.runtime.userdata.PSymbol
 
-case class PRuntime(root: PObject) extends TRuntime with TBaseRuntime {
-	final val nilUserdata = new PNil
-	var _nil: PObject = null
-	override def nil = {
-		if(_nil == null) {
-			_nil = root(this, getSymbol("nil"))
-			_nil.userdata = nilUserdata
+class PRuntime extends TRuntime {
+	val root = new PObject(this)
+	val nil = new PNil().createObject(this)
+
+	root(PSymbol("nil")) = nil
+
+	final val modifySymbol = "internal:modifySymbol"
+	final val modifyString = "internal:modifyString"
+	final val modifyMessage = "internal:modifyMessage"
+	final val modifyMessageSeq = "internal:modifyMessageSeq"
+	final val modifySend = "internal:modifySend"
+
+	def initSymbols(ground: PObject) {
+		ground.symbols.put(modifySymbol, PSymbol(modifySymbol).createObject(this))
+		ground.symbols.put("nil", PSymbol("nil").createObject(this))
+		ground.symbols.put(modifySymbol, createSymbol(root, PSymbol(modifySymbol)))
+		ground.symbols.put("nil", createSymbol(root, PSymbol("nil")))
+	}
+
+	override def createSymbol(ground: PObject, sym: PSymbol) = {
+		if(!ground.symbols.contains(modifySymbol)) {
+			initSymbols(ground)
 		}
-		_nil
-	}
 
-	symbols.put("modifySymbol", PSymbol("modifySymbol").createObject)
-	symbols.put("nil", PSymbol("nil").createObject)
-	symbols.put("modifySymbol", createSymbol(PSymbol("modifySymbol")))
-	symbols.put("nil", createSymbol(PSymbol("nil")))
-
-	override def createSymbol(sym: PSymbol) = {
-		val obj = super.createSymbol(sym)
-		root.send(this, symbols("modifySymbol"), obj)
+		val obj = sym.createObject(this)
+		ground.send(this, ground.symbols(modifySymbol), obj)
 		obj
 	}
 
-	override def createString(str: PString) = {
-		val obj = super.createString(str)
-		root.send(this, getSymbol(PSymbol("modifyString")), obj)
+	override def createString(ground: PObject, str: PString) = {
+		val obj = str.createObject(this)
+		ground.send(this, getSymbol(ground, PSymbol(modifyString)), obj)
 		obj
 	}
 
-	override def createMessage(msg: Message) = {
-		val obj = super.createMessage(msg)
-		root.send(this, getSymbol(PSymbol("modifyMessage")), obj)
+	override def createMessage(ground: PObject, msg: Message) = {
+		val obj = msg.createObject(this)
+		ground.send(this, getSymbol(ground, PSymbol(modifyMessage)), obj)
 		obj
 	}
 
-	override def createMessageSeq(seq: MessageSeq) = {
-		val obj = super.createMessageSeq(seq)
-		root.send(this, getSymbol(PSymbol("modifyMessageSeq")), obj)
+	override def createMessageSeq(ground: PObject, seq: MessageSeq) = {
+		val obj = seq.createObject(this)
+		ground.send(this, getSymbol(ground, PSymbol(modifyMessageSeq)), obj)
 		obj
 	}
 
-	override def createSend(send: Send) = {
-		val obj = super.createSend(send)
-		root.send(this, getSymbol(PSymbol("modifySend")), obj)
+	override def createSend(ground: PObject, send: Send) = {
+		val obj = send.createObject(this)
+		ground.send(this, getSymbol(ground, PSymbol(modifySend)), obj)
 		obj
 	}
 }

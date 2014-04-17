@@ -4,11 +4,13 @@ import cpup.poland.runtime.userdata.PSymbol
 
 object RootGround {
 	def create = {
-		val ground = new PObject
+		val runtime = new PRuntime
+		val polandGround = runtime.root
+		val nil = runtime.nil
+		val ground = polandGround.derive
 
-		val nil = new PObject
-		ground(PSymbol("nil")) = nil
+		runtime.initSymbols(polandGround)
 
-		ground
+		(runtime, ground)
 	}
 }
