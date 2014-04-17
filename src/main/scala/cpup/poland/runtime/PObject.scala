@@ -68,7 +68,7 @@ class PObject {
 		} else { obj }
 	}
 	def send(root: PObject, runtime: PRuntime, name: PObject, args: PObject*) = {
-		Send(runtime, root, this, name, args: _*).send
+		Send.fromObjs(runtime, root, this, name, args: _*).send
 	}
 	def send(runtime: PRuntime, name: PObject, args: PObject*): PObject = {
 		send(runtime.root, runtime, name, args: _*)

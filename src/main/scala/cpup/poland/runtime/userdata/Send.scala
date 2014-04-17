@@ -12,7 +12,7 @@ case class Send(runtime: PRuntime, ground: PObject, receiver: PObject, seq: Mess
 object Send {
 	final val name = getClass.getName
 
-	def apply(runtime: PRuntime, root: PObject, receiver: PObject, name: PObject, args: PObject*): Send = {
+	def fromObjs(runtime: PRuntime, root: PObject, receiver: PObject, name: PObject, args: PObject*): Send = {
 		val ground = root.derive
 
 		for((arg, i) <- args.view.zipWithIndex) {
