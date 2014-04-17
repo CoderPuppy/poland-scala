@@ -6,7 +6,7 @@ import cpup.poland.runtime.userdata.PSymbol
 
 class PRuntime extends TRuntime {
 	val root = new PObject(this)
-	val nil = new PNil().createObject(this)
+	val nil = PNil.createObject(this)
 
 	root(PSymbol("nil")) = nil
 
