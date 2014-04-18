@@ -15,6 +15,7 @@ class PRuntime {
 	final val modifyMessage = "internal:modifyMessage"
 	final val modifyMessageSeq = "internal:modifyMessageSeq"
 	final val modifySend = "internal:modifySend"
+	final val modifyRawFunction = "internal:modifyRawFunction"
 
 	def initSymbols(ground: PObject) {
 		ground.symbols.put(modifySymbol, PSymbol(modifySymbol).createObject(this))
@@ -57,6 +58,12 @@ class PRuntime {
 	def createSend(ground: PObject, send: Send) = {
 		val obj = send.createObject(this)
 		ground.send(this, getSymbol(ground, PSymbol(modifySend)), obj)
+		obj
+	}
+
+	def createRawFunction(ground: PObject, fn: PRawFunction) = {
+		val obj = fn.createObject(this)
+		ground.send(this, getSymbol(ground, PSymbol(modifyRawFunction)), obj)
 		obj
 	}
 }
