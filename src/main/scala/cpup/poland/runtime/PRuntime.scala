@@ -16,25 +16,26 @@ class PRuntime {
 	final val modifyMessageSeq = "internal:modifyMessageSeq"
 	final val modifySend = "internal:modifySend"
 	final val modifyRawFunction = "internal:modifyRawFunction"
+	final val modifyCallGround = "internal:modifyCallGround"
 
 	def initSymbols(ground: PObject) {
-		ground.symbols.put(modifySymbol, PSymbol(modifySymbol).createObject(this))
-		ground.symbols.put("nil", PSymbol("nil").createObject(this))
-		ground.symbols.put(modifySymbol, createSymbol(root, PSymbol(modifySymbol)))
-		ground.symbols.put("nil", createSymbol(root, PSymbol("nil")))
+		ground.hints.put(s"symbol:$modifySymbol", PSymbol(modifySymbol).createObject(this))
+		ground.hints.put("symbol:nil", PSymbol("nil").createObject(this))
+		ground.hints.put(s"symbol:$modifySymbol", createSymbol(root, PSymbol(modifySymbol)))
+		ground.hints.put("symbol:nil", createSymbol(root, PSymbol("nil")))
 	}
 
 	def createSymbol(ground: PObject, sym: PSymbol) = {
-		if(!ground.symbols.contains(modifySymbol)) {
+		if(!ground.hints.contains(s"symbol:$modifySymbol")) {
 			initSymbols(ground)
 		}
 
 		val obj = sym.createObject(this)
-		ground.send(this, ground.symbols(modifySymbol), obj)
+		ground.send(this, ground.hints(s"symbol:$modifySymbol"), obj)
 		obj
 	}
 
-	def getSymbol(ground: PObject, sym: PSymbol) = ground.symbols.getOrElseUpdate(sym.text, createSymbol(ground, sym))
+	def getSymbol(ground: PObject, sym: PSymbol) = ground.hints.getOrElseUpdate(s"symbol:${sym.text}", createSymbol(ground, sym))
 	def getSymbol(ground: PObject, sym: String): PObject = getSymbol(ground, PSymbol(sym))
 
 	def createString(ground: PObject, str: PString) = {
@@ -66,4 +67,14 @@ class PRuntime {
 		ground.send(this, getSymbol(ground, PSymbol(modifyRawFunction)), obj)
 		obj
 	}
+
+	def createCallGround(ground: PObject, fn: PRawFunction, send: Send) = {
+		val obj = createObject
+		obj.hints("fn") = fn.createObject(this)
+		obj.hints("send") = send.createObject(this)
+		ground.send(this, modifyCallGround, obj, createRawFunction(ground, fn), createSend(ground, send))
+		obj
+	}
+
+	def createObject = new PObject(this)
 }

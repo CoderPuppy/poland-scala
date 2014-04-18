@@ -45,7 +45,7 @@ class PObject(val runtime: PRuntime) {
 		newUserdata
 	}
 
-	val symbols = new mutable.HashMap[String, PObject]()
+	val hints = new mutable.HashMap[String, PObject]()
 
 	val slots = new mutable.HashMap[String, PObject]
 	val sources = new ListBuffer[PObject]

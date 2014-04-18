@@ -18,6 +18,7 @@ class InstructionSeq(_msgs: TInstruction*) extends Userdata {
 	def eval(runtime: PRuntime, ground: PObject, current: PObject) = Interpreter.eval(runtime, ground, this, current)
 	def eval(runtime: PRuntime, ground: PObject) = Interpreter.eval(runtime, ground, this)
 	def eval(runtime: PRuntime) = Interpreter.eval(runtime, this)
+	def eval(ground: PObject) = Interpreter.eval(ground, this)
 }
 object InstructionSeq {
 	def apply(msgs: Message*) = new InstructionSeq(msgs: _*)

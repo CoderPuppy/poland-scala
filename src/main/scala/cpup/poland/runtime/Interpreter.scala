@@ -16,4 +16,5 @@ object Interpreter {
 	def eval(runtime: PRuntime, ground: PObject, seq: InstructionSeq): PObject = eval(runtime, ground, seq, ground)
 	def eval(runtime: PRuntime, seq: InstructionSeq, current: PObject): PObject = eval(runtime, runtime.root, seq, current)
 	def eval(runtime: PRuntime, seq: InstructionSeq): PObject = eval(runtime, runtime.root, seq)
+	def eval(ground: PObject, seq: InstructionSeq): PObject = eval(ground.runtime, ground, seq)
 }
