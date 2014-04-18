@@ -2,12 +2,11 @@ package cpup.poland.runtime.userdata
 
 import cpup.poland.runtime.PObject
 
-case class JavaObject(obj: Any) extends Userdata {
-	def id = s"${obj.getClass.getName}:${obj.hashCode}"
-	override def toString = obj.toString
+case class JavaObject(jobj: Any) extends Userdata {
+	override def objID(obj: PObject) = (jobj.getClass.getName, jobj.hashCode).toString
+	override def toString = jobj.toString
 }
 trait TNull extends TNil {
-	override def objID(obj: PObject) = objID("null")
 	override def toString = "null"
 }
 object PNull extends TNull
