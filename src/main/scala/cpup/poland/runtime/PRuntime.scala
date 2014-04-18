@@ -4,7 +4,7 @@ import cpup.poland.runtime.userdata._
 import cpup.poland.runtime.userdata.PString
 import cpup.poland.runtime.userdata.PSymbol
 
-class PRuntime extends TRuntime {
+class PRuntime {
 	val root = new PObject(this)
 	val nil = PNil.createObject(this)
 
@@ -23,7 +23,7 @@ class PRuntime extends TRuntime {
 		ground.symbols.put("nil", createSymbol(root, PSymbol("nil")))
 	}
 
-	override def createSymbol(ground: PObject, sym: PSymbol) = {
+	def createSymbol(ground: PObject, sym: PSymbol) = {
 		if(!ground.symbols.contains(modifySymbol)) {
 			initSymbols(ground)
 		}
@@ -33,25 +33,28 @@ class PRuntime extends TRuntime {
 		obj
 	}
 
-	override def createString(ground: PObject, str: PString) = {
+	def getSymbol(ground: PObject, sym: PSymbol) = ground.symbols.getOrElseUpdate(sym.text, createSymbol(ground, sym))
+	def getSymbol(ground: PObject, sym: String): PObject = getSymbol(ground, PSymbol(sym))
+
+	def createString(ground: PObject, str: PString) = {
 		val obj = str.createObject(this)
 		ground.send(this, getSymbol(ground, PSymbol(modifyString)), obj)
 		obj
 	}
 
-	override def createMessage(ground: PObject, msg: Message) = {
+	def createMessage(ground: PObject, msg: Message) = {
 		val obj = msg.createObject(this)
 		ground.send(this, getSymbol(ground, PSymbol(modifyMessage)), obj)
 		obj
 	}
 
-	override def createMessageSeq(ground: PObject, seq: MessageSeq) = {
+	def createMessageSeq(ground: PObject, seq: InstructionSeq) = {
 		val obj = seq.createObject(this)
 		ground.send(this, getSymbol(ground, PSymbol(modifyMessageSeq)), obj)
 		obj
 	}
 
-	override def createSend(ground: PObject, send: Send) = {
+	def createSend(ground: PObject, send: Send) = {
 		val obj = send.createObject(this)
 		ground.send(this, getSymbol(ground, PSymbol(modifySend)), obj)
 		obj

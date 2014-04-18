@@ -3,10 +3,8 @@ package cpup.poland.runtime.userdata
 import cpup.poland.runtime.{PRuntime, PObject}
 import cpup.poland.parser.Lexer
 
-case class Send(runtime: PRuntime, ground: PObject, receiver: PObject, seq: MessageSeq, msg: Message) extends Userdata {
-	def send: PObject = receiver.receive(this)
-
-	def id = (ground.id, receiver.id, seq.id, msg.id).toString
+case class Send(context: SendContext, seq: InstructionSeq, msg: Message) extends Userdata {
+	def send: PObject = context.receiver.receive(this)
 }
 
 object Send {
@@ -20,12 +18,12 @@ object Send {
 		}
 
 		val msg = new Message(name, Lexer.TokenPos(s"$name:sendobjs", 1, 1, 1), args.view.zipWithIndex.map((e) => {
-			MessageSeq(Message(
+			InstructionSeq(Message(
 				PSymbol(s"$name:sendobjs:${e._2}").createObject(runtime),
 				Lexer.TokenPos(s"$name:sendobjs", 1, 1, 1)
 			))
 		}).toSeq: _*)
 
-		Send(runtime, ground, receiver, MessageSeq(msg), msg)
+		Send(SendContext(runtime, ground, receiver), InstructionSeq(msg), msg)
 	}
 }

@@ -1,17 +1,15 @@
 package cpup.poland.runtime.userdata
 
-import cpup.poland.runtime.{Interpreter, PRuntime, PObject}
+import cpup.poland.runtime.{PObject, PRuntime, Interpreter}
 
-class MessageSeq(_msgs: Message*) extends Userdata {
-	def id = msgs.map(_.id).mkString(",")
-
-	def foreach[R](f: (Message) => R) {
+class InstructionSeq(_msgs: TInstruction*) extends Userdata {
+	def foreach[R](f: (TInstruction) => R) {
 		msgs.foreach(f)
 	}
 
 	var msgs = _msgs.toBuffer
 
-	def add(msg: Message) {
+	def add(msg: TInstruction) {
 		msgs += msg
 	}
 
@@ -21,7 +19,7 @@ class MessageSeq(_msgs: Message*) extends Userdata {
 	def eval(runtime: PRuntime, ground: PObject) = Interpreter.eval(runtime, ground, this)
 	def eval(runtime: PRuntime) = Interpreter.eval(runtime, this)
 }
-object MessageSeq {
-	def apply(msgs: Message*) = new MessageSeq(msgs: _*)
-	def unapply(seq: MessageSeq) = Some(seq.msgs.toList)
+object InstructionSeq {
+	def apply(msgs: Message*) = new InstructionSeq(msgs: _*)
+	def unapply(seq: InstructionSeq) = Some(seq.msgs.toList)
 }

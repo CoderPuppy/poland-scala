@@ -3,8 +3,8 @@ package cpup.poland.runtime.userdata
 import cpup.poland.runtime.{PRuntime, PObject}
 
 trait Userdata {
-	def id: String
-	def objID = (getClass.getName, id).toString
+	def objID(obj: PObject) = obj.objID
+	def objID(id: String) = (getClass.getName, id).toString
 
 	def init(obj: PObject) {}
 	def cleanup(obj: PObject) {}

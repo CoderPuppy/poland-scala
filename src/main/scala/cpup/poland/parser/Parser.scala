@@ -1,12 +1,12 @@
 package cpup.poland.parser
 
-import cpup.poland.runtime.userdata.{Message, MessageSeq, PSymbol, PString}
+import cpup.poland.runtime.userdata.{Message, InstructionSeq, PSymbol, PString}
 import scala.collection.mutable
 import cpup.poland.parser.{TokenMatching => M}
-import cpup.poland.runtime.{PObject, TRuntime}
+import cpup.poland.runtime.{PRuntime, PObject}
 
-case class Parser(runtime: TRuntime, ground: PObject) {
-	var seq = new MessageSeq
+case class Parser(runtime: PRuntime, ground: PObject) {
+	var seq = new InstructionSeq
 	val stack = new mutable.Stack[Parser.Mode]
 
 	def mode = if(stack.isEmpty) null else stack.head
@@ -55,7 +55,7 @@ case class Parser(runtime: TRuntime, ground: PObject) {
 }
 
 object Parser {
-	def parse(runtime: TRuntime, ground: PObject, tokens: Seq[Lexer.Token]) = {
+	def parse(runtime: PRuntime, ground: PObject, tokens: Seq[Lexer.Token]) = {
 		val parser = new Parser(runtime, ground)
 		for(tok <- tokens) {
 			parser.handle(tok)
@@ -63,7 +63,7 @@ object Parser {
 		parser.done
 		parser.seq
 	}
-	def parse(runtime: TRuntime, tokens: Seq[Lexer.Token]): MessageSeq = parse(runtime, runtime.root, tokens)
+	def parse(runtime: PRuntime, tokens: Seq[Lexer.Token]): InstructionSeq = parse(runtime, runtime.root, tokens)
 
 	sealed trait Mode {
 		def enter(parser: Parser) {}
@@ -75,7 +75,7 @@ object Parser {
 		def leave(parser: Parser) {}
 	}
 
-	case class BodyMode(seq: MessageSeq, stopOn: M.Matcher = M.none) extends Mode {
+	case class BodyMode(seq: InstructionSeq, stopOn: M.Matcher = M.none) extends Mode {
 		var lastWasSlash = false
 		var msgPossible = true
 
@@ -354,7 +354,7 @@ object Parser {
 		}
 	}
 
-	case class ListMode(list: mutable.Buffer[MessageSeq], stopOn: M.Matcher = M.MNone) extends Mode {
+	case class ListMode(list: mutable.Buffer[InstructionSeq], stopOn: M.Matcher = M.MNone) extends Mode {
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			if(stopOn.check(tok)) {
 				parser.leave
@@ -365,13 +365,13 @@ object Parser {
 				case Lexer.TokenType.Whitespace =>
 
 				case Lexer.TokenType.Comma =>
-					val seq = new MessageSeq
+					val seq = new InstructionSeq
 					list += seq
 					parser enter BodyMode(seq, M.MOr(stopOn, M.MTokenType(Lexer.TokenType.Comma)))
 
 				case _ =>
 					if(list.size == 0) {
-						val seq = new MessageSeq
+						val seq = new InstructionSeq
 						list += seq
 						parser.enter(BodyMode(seq, M.MOr(stopOn, M.MTokenType(Lexer.TokenType.Comma))))
 						return parser.handle(tok)

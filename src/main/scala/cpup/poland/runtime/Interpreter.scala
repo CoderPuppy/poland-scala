@@ -1,19 +1,19 @@
 package cpup.poland.runtime
 
-import cpup.poland.runtime.userdata.{Send, MessageSeq}
+import cpup.poland.runtime.userdata.InstructionSeq
 
 object Interpreter {
-	def eval(runtime: PRuntime, ground: PObject, seq: MessageSeq, _current: PObject) = {
+	def eval(runtime: PRuntime, ground: PObject, seq: InstructionSeq, _current: PObject) = {
 		var current = _current
 
 		for(msg <- seq) {
-			current = Send(runtime, ground, current, seq, msg).send
+			current = msg.activate(runtime, ground, current, seq)
 		}
 
 		current
 	}
 
-	def eval(runtime: PRuntime, ground: PObject, seq: MessageSeq): PObject = eval(runtime, ground, seq, ground)
-	def eval(runtime: PRuntime, seq: MessageSeq, current: PObject): PObject = eval(runtime, runtime.root, seq, current)
-	def eval(runtime: PRuntime, seq: MessageSeq): PObject = eval(runtime, runtime.root, seq)
+	def eval(runtime: PRuntime, ground: PObject, seq: InstructionSeq): PObject = eval(runtime, ground, seq, ground)
+	def eval(runtime: PRuntime, seq: InstructionSeq, current: PObject): PObject = eval(runtime, runtime.root, seq, current)
+	def eval(runtime: PRuntime, seq: InstructionSeq): PObject = eval(runtime, runtime.root, seq)
 }

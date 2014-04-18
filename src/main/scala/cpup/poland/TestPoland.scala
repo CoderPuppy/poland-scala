@@ -1,7 +1,7 @@
 package cpup.poland
 
 import cpup.poland.parser.{Parser, Lexer}
-import cpup.poland.runtime.{Interpreter, RootGround, PObject, PRuntime}
+import cpup.poland.runtime.{Interpreter, RootGround}
 
 object TestPoland {
 	def main(args: Array[String]) {
