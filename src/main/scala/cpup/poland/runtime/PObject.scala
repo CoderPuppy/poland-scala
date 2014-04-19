@@ -57,28 +57,32 @@ class PObject(val runtime: PRuntime) {
 		this
 	}
 
-	def apply(runtime: PRuntime, name: PObject): PObject = {
-		this(runtime, name.id)
+	def apply(name: PObject): PObject = {
+		this(name.id)
 	}
 	def update(name: PObject, newVal: PObject): PObject = {
 		this(name.id) = newVal
 	}
 
-	def apply(runtime: PRuntime, name: Userdata): PObject = {
-		this(runtime, userdata.objID(this))
+	def apply(name: Userdata): PObject = {
+		this(name.objID(this))
 	}
 	def update(name: Userdata, newVal: PObject): PObject = {
 		this(name.objID(this)) = newVal
 	}
 
-	def apply(runtime: PRuntime, name: String): PObject = {
+	def apply(name: String, path: List[String] = List()): PObject = {
+		if(path.contains(objID)) {
+			return runtime.nil
+		}
+
 		slots.getOrElse(name, {
 			var value = runtime.nil
 
 			Breaks.breakable {
 				for(src <- sources) {
-					val srcVal = src(runtime, name)
-					if(srcVal != runtime.nil) {
+					val srcVal = src(name, path ++ List(objID))
+					if(srcVal.userdata != PNil) { // TODO: Maybe !isInstanceOf[TNil]
 						value = srcVal
 						Breaks.break
 					}
@@ -94,9 +98,9 @@ class PObject(val runtime: PRuntime) {
 	}
 
 	def receive(send: Send) = {
-		val obj = this(send.context.runtime, send.msg.name)
+		val obj = this(send.msg.name)
 
-		if(obj.isCallable(send.context.runtime, send.context.ground)) {
+		if(obj.isCallable(send.context.runtime, runtime.root)) {
 			obj.call(send)
 		} else { obj }
 	}
@@ -129,9 +133,9 @@ class PObject(val runtime: PRuntime) {
 	}
 	def call(send: Send) = if(userdata == null) {
 		this.send(
-			send.context.runtime,
-			send.context.runtime.getSymbol(send.context.ground, PSymbol("call")),
-			send.context.runtime.createSend(send.context.ground, send)
+			runtime,
+			runtime.getSymbol(runtime.root, PSymbol("call")),
+			runtime.createSend(runtime.root, send)
 		)
 	} else {
 		userdata.call(send)
