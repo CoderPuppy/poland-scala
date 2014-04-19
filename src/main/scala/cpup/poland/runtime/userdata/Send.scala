@@ -14,13 +14,13 @@ object Send {
 		val ground = root.derive
 
 		for((arg, i) <- args.view.zipWithIndex) {
-			ground(PSymbol(s"$name:sendobjs:$i")) = arg
+			ground(PSymbol(s"${this.name}:sendobjs:$i")) = arg
 		}
 
-		val msg = new Message(name, Lexer.TokenPos(s"$name:sendobjs", 1, 1, 1), args.view.zipWithIndex.map((e) => {
+		val msg = new Message(name, Lexer.TokenPos(s"${this.name}:sendobjs", 1, 1, 1), args.view.zipWithIndex.map((e) => {
 			InstructionSeq(Message(
-				PSymbol(s"$name:sendobjs:${e._2}").createObject(runtime),
-				Lexer.TokenPos(s"$name:sendobjs", 1, 1, 1)
+				runtime.getSymbol(root, s"${this.name}:sendobjs:${e._2}"),
+				Lexer.TokenPos(s"${this.name}:sendobjs", 1, 1, 1)
 			))
 		}).toSeq: _*)
 
