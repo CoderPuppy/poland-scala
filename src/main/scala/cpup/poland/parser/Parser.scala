@@ -85,6 +85,10 @@ object Parser {
 				return parser.handle(tok)
 			}
 
+			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
+				throw ParseException(s"expected: LineCommentBegin, got: ${tok.tokenType}, at line ${tok.pos.row}, column ${tok.pos.column}, char ${tok.pos.char}")
+			}
+
 			tok.tokenType match {
 				case Lexer.TokenType.ID =>
 					if(msgPossible) {
@@ -93,7 +97,7 @@ object Parser {
 							tok.pos
 						)))
 					} else {
-						throw ParseException("expected: whitespace, got: id, at line #{tok line}, column #{tok column}")
+						throw ParseException(s"expected: whitespace, got: id, at line ${tok.pos.line}, column ${tok.pos.column}")
 					}
 					msgPossible = false
 
@@ -376,7 +380,7 @@ object Parser {
 						parser.enter(BodyMode(seq, M.MOr(stopOn, M.MTokenType(Lexer.TokenType.Comma))))
 						return parser.handle(tok)
 					} else {
-						throw ParseException("expected: comma, got: #{tok type}")
+						throw ParseException(s"expected: comma, got: ${tok.tokenType}, at line: ${tok.pos.row}, column: ${tok.pos.column}, char: ${tok.pos.char}")
 					}
 			}
 
