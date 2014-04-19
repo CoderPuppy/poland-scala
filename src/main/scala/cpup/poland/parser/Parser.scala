@@ -86,7 +86,7 @@ object Parser {
 			}
 
 			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
-				throw ParseException(s"expected: LineCommentBegin, got: ${tok.tokenType}, at line ${tok.pos.row}, column ${tok.pos.column}, char ${tok.pos.char}")
+				throw ParseException(s"expected: LineCommentBegin, got: ${tok.tokenType}, at line ${tok.pos.line}, column ${tok.pos.column}, char ${tok.pos.char}")
 			}
 
 			tok.tokenType match {
@@ -163,7 +163,7 @@ object Parser {
 			}
 
 			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
-				throw ParseException(s"unexpected fwdslash at line ${tok.pos.row - 1} column ${tok.pos.column} (char ${tok.pos.char - 1})")
+				throw ParseException(s"unexpected fwdslash at line ${tok.pos.line - 1} column ${tok.pos.column} (char ${tok.pos.char - 1})")
 			}
 
 			true
@@ -243,7 +243,7 @@ object Parser {
 							lastWasSlash = false
 							good = good && parser.handle(Lexer.Token(
 								Lexer.TokenType.ForwardSlash, "/",
-								Lexer.TokenPos(tok.pos.context, tok.pos.char - 1, tok.pos.row, tok.pos.column - 1)
+								Lexer.TokenPos(tok.pos.context, tok.pos.char - 1, tok.pos.line, tok.pos.column - 1)
 							))
 						}
 
@@ -380,7 +380,7 @@ object Parser {
 						parser.enter(BodyMode(seq, M.MOr(stopOn, M.MTokenType(Lexer.TokenType.Comma))))
 						return parser.handle(tok)
 					} else {
-						throw ParseException(s"expected: comma, got: ${tok.tokenType}, at line: ${tok.pos.row}, column: ${tok.pos.column}, char: ${tok.pos.char}")
+						throw ParseException(s"expected: comma, got: ${tok.tokenType}, at line: ${tok.pos.line}, column: ${tok.pos.column}, char: ${tok.pos.char}")
 					}
 			}
 

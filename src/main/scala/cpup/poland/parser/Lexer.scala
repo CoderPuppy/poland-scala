@@ -140,11 +140,11 @@ object Lexer {
 		def withText(text:         String) = Token(tokenType, text, pos)
 		def withPos (pos:        TokenPos) = Token(tokenType, text, pos)
 	}
-	case class TokenPos(context: String, char: Int, row: Int, column: Int) {
-		def withContext(context: String) = TokenPos(context, char, row, column)
-		def withChar   (char:       Int) = TokenPos(context, char, row, column)
+	case class TokenPos(context: String, char: Int, line: Int, column: Int) {
+		def withContext(context: String) = TokenPos(context, char, line, column)
+		def withChar   (char:       Int) = TokenPos(context, char, line, column)
 		def withRow    (row:        Int) = TokenPos(context, char, row, column)
-		def withColumn (column:     Int) = TokenPos(context, char, row, column)
+		def withColumn (column:     Int) = TokenPos(context, char, line, column)
 	}
 	sealed trait TokenType {}
 	object TokenType {
