@@ -311,7 +311,7 @@ object Parser {
 
 		override def enter(parser: Parser) {
 			// TODO: hurah?
-//			if(msg.name.userdata.isInstanceOf[PString]) {
+//			if(instr.name.userdata.isInstanceOf[PString]) {
 //				inName = false
 //			}
 		}
