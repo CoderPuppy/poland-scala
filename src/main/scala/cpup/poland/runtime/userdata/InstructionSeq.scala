@@ -2,18 +2,18 @@ package cpup.poland.runtime.userdata
 
 import cpup.poland.runtime.{PObject, PRuntime, Interpreter}
 
-class InstructionSeq(_msgs: TInstruction*) extends Userdata {
+class InstructionSeq(_instrs: TInstruction*) extends Userdata {
 	def foreach[R](f: (TInstruction) => R) {
-		msgs.foreach(f)
+		instrs.foreach(f)
 	}
 
-	var msgs = _msgs.toBuffer
+	var instrs = _instrs.toBuffer
 
-	def add(msg: TInstruction) {
-		msgs += msg
+	def add(instr: TInstruction) {
+		instrs += instr
 	}
 
-	override def toString = s"{ ${msgs.mkString(", ")} }"
+	override def toString = s"{ ${instrs.mkString(", ")} }"
 
 	def eval(runtime: PRuntime, ground: PObject, current: PObject) = Interpreter.eval(runtime, ground, this, current)
 	def eval(runtime: PRuntime, ground: PObject) = Interpreter.eval(runtime, ground, this)
@@ -21,6 +21,6 @@ class InstructionSeq(_msgs: TInstruction*) extends Userdata {
 	def eval(ground: PObject) = Interpreter.eval(ground, this)
 }
 object InstructionSeq {
-	def apply(msgs: Message*) = new InstructionSeq(msgs: _*)
-	def unapply(seq: InstructionSeq) = Some(seq.msgs.toList)
+	def apply(instrs: TInstruction*) = new InstructionSeq(instrs: _*)
+	def unapply(seq: InstructionSeq) = Some(seq.instrs.toList)
 }
