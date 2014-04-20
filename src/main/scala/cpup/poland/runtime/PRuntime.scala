@@ -16,6 +16,7 @@ class PRuntime {
 		PRuntime.Names.modifySymbol,
 		PRuntime.Names.modifyObject,
 		PRuntime.Names.modifyUserdata,
+		PRuntime.Names.modifyCallGround,
 		PRuntime.Names.nil
 	) ++ (0 to 10).map((i) => s"${Send.name}:sendobjs:$i")
 
@@ -57,7 +58,7 @@ class PRuntime {
 		obj
 	}
 
-	def createSymbol(ground: PObject, sym: PSymbol) = {
+	private def createSymbol(ground: PObject, sym: PSymbol) = {
 		val modifySymbol = ground(PSymbol(PRuntime.Names.symbols))(PSymbol(PRuntime.Names.modifySymbol))
 		if(modifySymbol == ground(PSymbol(PRuntime.Names.nil))) {
 			initSymbols(ground)

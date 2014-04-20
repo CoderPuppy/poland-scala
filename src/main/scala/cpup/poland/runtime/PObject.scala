@@ -109,21 +109,21 @@ class PObject(val runtime: PRuntime) {
 		Send.fromObjs(runtime, root, this, name, args: _*).send
 	}
 	def send(root: PObject, runtime: PRuntime, name: String, args: PObject*): PObject = {
-		send(root, runtime, runtime.createSymbol(root, PSymbol(name)), args: _*)
+		send(root, runtime, runtime.getSymbol(root, name), args: _*)
 	}
 
 	def send(runtime: PRuntime, name: PObject, args: PObject*): PObject = {
 		send(runtime.root, runtime, name, args: _*)
 	}
 	def send(runtime: PRuntime, name: String, args: PObject*): PObject = {
-		send(runtime, runtime.createSymbol(runtime.root, PSymbol(name)), args: _*)
+		send(runtime, runtime.getSymbol(runtime.root, name), args: _*)
 	}
 
 	def send(name: PObject, args: PObject*): PObject = {
 		send(runtime, name, args: _*)
 	}
 	def send(name: String, args: PObject*): PObject = {
-		send(runtime.createSymbol(runtime.root, PSymbol(name)), args: _*)
+		send(runtime.getSymbol(runtime.root, name), args: _*)
 	}
 
 	def isCallable(runtime: PRuntime, ground: PObject) = if(userdata == null) {
