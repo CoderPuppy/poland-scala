@@ -47,7 +47,8 @@ case class Lexer(context: String, sugar: Boolean = true) {
 			P.MChar('\t'),
 			P.MChar(' '),
 			P.MChar('/'),
-			P.MChar('\\')
+			P.MChar('\\'),
+			P.MChar(',')
 		))
 
 		if(sugar) {

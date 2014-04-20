@@ -238,7 +238,7 @@ object Parser {
 //				case Lexer.TokenType.Whitespace if inArgs =>
 //					inName = false // TODO: hurah?
 
-				case Lexer.TokenType.Whitespace if !inArgs =>
+				case Lexer.TokenType.Whitespace if !inName =>
 					parser.leave
 					return parser.handle(tok)
 
@@ -310,9 +310,10 @@ object Parser {
 		}
 
 		override def enter(parser: Parser) {
-			if(msg.name.userdata.isInstanceOf[PString]) {
-				inName = false
-			}
+			// TODO: hurah?
+//			if(msg.name.userdata.isInstanceOf[PString]) {
+//				inName = false
+//			}
 		}
 
 		override def leaveChild(parser: Parser, child: Mode) {
@@ -363,19 +364,19 @@ object Parser {
 	}
 
 	case class StringMode(start: Lexer.Token, var str: String = "") extends Mode {
+		str += start.text
+
 		var lastWasBackslash = false
 		final val tokenType = start.tokenType
 
 		def handle(parser: Parser, tok: Lexer.Token) = {
 			tok.tokenType match {
 				case Lexer.TokenType.Backslash =>
-					if(lastWasBackslash) {
-						str += tok.text
-					} else {
-						lastWasBackslash = true
-					}
+					str += tok.text
+					lastWasBackslash = true
 
 				case `tokenType` =>
+					str += tok.text
 					if(!lastWasBackslash) {
 						parser.leave
 					}
