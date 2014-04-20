@@ -8,8 +8,8 @@ class Message(var name: PObject, pos: Lexer.TokenPos, _args: InstructionSeq*) ex
 
 	override def toString = s"${name.toString}(${args.mkString(", ")})"
 
-	override def activate(runtime: PRuntime, ground: PObject, receiver: PObject, seq: InstructionSeq) = {
-		Send(SendContext(runtime, ground, receiver), seq, this).send
+	override def activate(context: SendContext, seq: InstructionSeq) = {
+		Send(context, seq, this).send
 	}
 }
 object Message {

@@ -1,7 +1,8 @@
 package cpup.poland
 
 import cpup.poland.parser.{Parser, Lexer}
-import cpup.poland.runtime.{Interpreter, RootGround}
+import cpup.poland.runtime.RootGround
+import cpup.poland.runtime.userdata.SendContext
 
 object TestPoland {
 	def main(args: Array[String]) {
@@ -17,7 +18,7 @@ object TestPoland {
 		val seq = Parser.parse(runtime, ground, tokens)
 		println(s"Seq: $seq")
 
-		val result = Interpreter.eval(runtime, ground, seq)
+		val result = seq.activate(SendContext(ground, ground))
 		println(s"Result: $result")
 
 		println("Test Completed")

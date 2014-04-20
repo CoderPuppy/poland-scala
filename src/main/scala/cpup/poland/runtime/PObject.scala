@@ -26,7 +26,7 @@ class PObject(val runtime: PRuntime) {
 	override def toString = toString(runtime.root)
 	def toString(ground: PObject): String = toString(runtime, ground)
 	def toString(runtime: PRuntime, ground: PObject) = if(userdata == null) {
-		send(ground, runtime, "toString").userdata match {
+		send(ground, "toString").userdata match {
 			case PString(text) => text
 			case _ => id
 		}
@@ -105,22 +105,26 @@ class PObject(val runtime: PRuntime) {
 		} else { obj }
 	}
 
-	def send(root: PObject, runtime: PRuntime, name: PObject, args: PObject*) = {
-		Send.fromObjs(runtime, root, this, name, args: _*).send
+	def send(ground: PObject, name: PObject, args: Seq[PObject]) = {
+		Send.fromObjs(ground, this, name, args: _*).send
 	}
-	def send(root: PObject, runtime: PRuntime, name: String, args: PObject*): PObject = {
-		send(root, runtime, runtime.getSymbol(root, name), args: _*)
+	def send(ground: PObject, name: PObject): PObject = send(ground, name, List())
+	def send(ground: PObject, name: String, args: Seq[PObject]): PObject = {
+		send(ground, runtime.getSymbol(ground, name), args)
 	}
+	def send(ground: PObject, name: String): PObject = send(ground, name, List())
 
-	def send(runtime: PRuntime, name: PObject, args: PObject*): PObject = {
-		send(runtime.root, runtime, name, args: _*)
+	def send(runtime: PRuntime, name: PObject, args: Seq[PObject]): PObject = {
+		send(runtime.root, name, args)
 	}
-	def send(runtime: PRuntime, name: String, args: PObject*): PObject = {
-		send(runtime, runtime.getSymbol(runtime.root, name), args: _*)
+	def send(runtime: PRuntime, name: PObject): PObject = send(runtime, name, List())
+	def send(runtime: PRuntime, name: String, args: Seq[PObject]): PObject = {
+		send(runtime, runtime.getSymbol(runtime.root, name), args)
 	}
+	def send(runtime: PRuntime, name: String): PObject = send(runtime, name, List())
 
 	def send(name: PObject, args: PObject*): PObject = {
-		send(runtime, name, args: _*)
+		send(runtime, name, args)
 	}
 	def send(name: String, args: PObject*): PObject = {
 		send(runtime.getSymbol(runtime.root, name), args: _*)
@@ -135,7 +139,9 @@ class PObject(val runtime: PRuntime) {
 		this.send(
 			runtime,
 			runtime.getSymbol(runtime.root, PSymbol("call")),
-			runtime.createSend(runtime.root, send)
+			List(
+				runtime.createSend(runtime.root, send)
+			)
 		)
 	} else {
 		userdata.call(send)

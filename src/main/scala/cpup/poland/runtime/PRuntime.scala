@@ -42,7 +42,7 @@ class PRuntime {
 		}
 
 		val obj = new PObject(this)
-		ground.send(this, modifyObject, obj)
+		ground.send(this, modifyObject, List(obj))
 		obj
 	}
 
@@ -54,7 +54,7 @@ class PRuntime {
 
 		val obj = createObject(ground)
 		obj.userdata = userdata
-		ground.send(this, modifyUserdata, obj)
+		ground.send(this, modifyUserdata, List(obj))
 		obj
 	}
 
@@ -66,7 +66,7 @@ class PRuntime {
 
 		val obj = createUserdata(ground, sym)
 		ground(PSymbol(PRuntime.Names.symbols))(sym) = obj
-		ground.send(this, modifySymbol, obj)
+		ground.send(this, modifySymbol, List(obj))
 		obj
 	}
 
@@ -82,31 +82,31 @@ class PRuntime {
 
 	def createString(ground: PObject, str: PString) = {
 		val obj = createUserdata(ground, str)
-		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyString)), obj)
+		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyString)), List(obj))
 		obj
 	}
 
 	def createMessage(ground: PObject, msg: Message) = {
 		val obj = createUserdata(ground, msg)
-		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyMessage)), obj)
+		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyMessage)), List(obj))
 		obj
 	}
 
 	def createInstructionSeq(ground: PObject, seq: InstructionSeq) = {
 		val obj = createUserdata(ground, seq)
-		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyInstructionSeq)), obj)
+		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyInstructionSeq)), List(obj))
 		obj
 	}
 
 	def createSend(ground: PObject, send: Send) = {
 		val obj = createUserdata(ground, send)
-		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifySend)), obj)
+		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifySend)), List(obj))
 		obj
 	}
 
 	def createRawFunction(ground: PObject, fn: PRawFunction) = {
 		val obj = createUserdata(ground, fn)
-		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyRawFunction)), obj)
+		ground.send(this, getSymbol(ground, PSymbol(PRuntime.Names.modifyRawFunction)), List(obj))
 		obj
 	}
 
@@ -114,7 +114,15 @@ class PRuntime {
 		val obj = createObject(ground)
 		obj.hints("fn") = fn.createObject(this)
 		obj.hints("send") = send.createObject(this)
-		ground.send(this, PRuntime.Names.modifyCallGround, obj, createRawFunction(ground, fn), createSend(ground, send))
+		ground.send(
+			this,
+			PRuntime.Names.modifyCallGround,
+			List(
+				obj,
+				createRawFunction(ground, fn),
+				createSend(ground, send)
+			)
+		)
 		obj
 	}
 }

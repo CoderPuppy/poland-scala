@@ -16,9 +16,9 @@ object RootGround {
 			polandGround, new PRawFunction(
 				ground,
 				InstructionSeq(
-					new NativeInstruction((runtime: PRuntime, ground: PObject, receiver: PObject) => {
-						println(ground.hints("send").userdata match {
-							case send: Send => send.msg.args(0).eval(runtime, send.context.ground)
+					new NativeInstruction((context: SendContext) => {
+						println(context.ground.hints("send").userdata match {
+							case send: Send => send.msg.args(0).activate(context)
 							case _ => null
 						})
 						runtime.nil
