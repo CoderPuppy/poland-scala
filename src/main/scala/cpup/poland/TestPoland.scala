@@ -11,7 +11,7 @@ object TestPoland {
 		println(s"Ground: $ground")
 		println(s"Runtime: $runtime")
 
-		val tokens = Lexer.lex("println(\"Hello, World!\")", "test.pd")
+		val tokens = Lexer.lex("println('Hello, World!' replace(/Hello/g, 'hi')", "test.pd")
 		println(s"Tokens: $tokens")
 
 		val seq = Parser.parse(runtime, ground, tokens)

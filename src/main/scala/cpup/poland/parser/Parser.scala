@@ -77,6 +77,9 @@ object Parser {
 
 	case class BodyMode(seq: InstructionSeq, stopOn: M.Matcher = M.none) extends Mode {
 		var lastWasSlash = false
+		var lastSlash: Lexer.Token = null
+		var ignoreNextSlash = false
+
 		var msgPossible = true
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
@@ -86,7 +89,9 @@ object Parser {
 			}
 
 			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
-				throw ParseException(s"expected: LineCommentBegin, got: ${tok.tokenType}, at line ${tok.pos.line}, column ${tok.pos.column}, char ${tok.pos.char}")
+				ignoreNextSlash = true
+				lastWasSlash = false
+				return parser.handle(lastSlash) && parser.handle(tok)
 			}
 
 			tok.tokenType match {
@@ -97,7 +102,7 @@ object Parser {
 							tok.pos
 						)))
 					} else {
-						throw ParseException(s"expected: whitespace, got: id, at line ${tok.pos.line}, column ${tok.pos.column}")
+						throw ParseException(s"expected: Whitespace, got: ID, at line ${tok.pos.line}, column ${tok.pos.column}")
 					}
 					msgPossible = false
 
@@ -144,9 +149,21 @@ object Parser {
 						parser.enter(new LineCommentMode)
 					}
 
-				case Lexer.TokenType.ForwardSlash =>
-					// TODO: backtracking
+				case Lexer.TokenType.ForwardSlash if ignoreNextSlash =>
+					ignoreNextSlash = false
+					if(msgPossible) {
+						parser.enter(MsgMode(Message(
+							parser.runtime.getSymbol(parser.ground, PSymbol(tok.text)),
+							tok.pos
+						)))
+					} else {
+						throw ParseException(s"expected: Whitespace, got: ForwardSlash, at line ${tok.pos.line}, column ${tok.pos.column}")
+					}
+					msgPossible = false
+
+				case Lexer.TokenType.ForwardSlash if !ignoreNextSlash =>
 					lastWasSlash = true
+					lastSlash = tok
 
 				case Lexer.TokenType.DoubleQuote | Lexer.TokenType.SingleQuote =>
 					parser enter StringMode(tok)
@@ -160,10 +177,6 @@ object Parser {
 				case _ =>
 					parser.leave
 					return parser.handle(tok)
-			}
-
-			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
-				throw ParseException(s"unexpected fwdslash at line ${tok.pos.line - 1} column ${tok.pos.column} (char ${tok.pos.char - 1})")
 			}
 
 			true
@@ -196,9 +209,18 @@ object Parser {
 
 		var inName = true
 		var inArgs = false
+
 		var lastWasSlash = false
+		var lastSlash: Lexer.Token = null
+		var ignoreNextSlash = false
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
+			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
+				ignoreNextSlash = true
+				lastWasSlash = false
+				return parser.handle(lastSlash) && parser.handle(tok)
+			}
+
 			tok.tokenType match {
 				case Lexer.TokenType.ID if inName =>
 					msg.name.userdata match {
@@ -210,21 +232,19 @@ object Parser {
 						case _ =>
 					}
 
-				case Lexer.TokenType.SingleQuote | Lexer.TokenType.SingleQuote if inName =>
+				case Lexer.TokenType.SingleQuote | Lexer.TokenType.DoubleQuote if inName =>
 					parser.enter(StringMode(tok))
 
-				case Lexer.TokenType.Whitespace if inArgs =>
-					inName = false
+//				case Lexer.TokenType.Whitespace if inArgs =>
+//					inName = false // TODO: hurah?
 
 				case Lexer.TokenType.Whitespace if !inArgs =>
 					parser.leave
 					return parser.handle(tok)
 
-				case Lexer.TokenType.Newline =>
-					if(inName) {
-						parser.leave
-						return parser.handle(tok)
-					}
+				case Lexer.TokenType.Newline if inName =>
+					parser.leave
+					return parser.handle(tok)
 
 				case Lexer.TokenType.LineCommentBegin =>
 					if(inArgs) {
@@ -254,17 +274,31 @@ object Parser {
 						}
 					}
 
-				case Lexer.TokenType.ForwardSlash =>
+				case Lexer.TokenType.ForwardSlash if ignoreNextSlash && inName =>
+					ignoreNextSlash = false
+					msg.name.userdata match {
+						case symbol: PSymbol =>
+							msg.name = parser.runtime.getSymbol(
+								parser.ground,
+								PSymbol(symbol.text + tok.text)
+							)
+						case _ =>
+					}
+
+				case Lexer.TokenType.ForwardSlash if !ignoreNextSlash =>
 					lastWasSlash = true
+					lastSlash = tok
 
 				case Lexer.TokenType.OpenParen =>
+					inName = false
 					inArgs = true
 					parser.enter(ListMode(msg.args, M.tokenType(Lexer.TokenType.CloseParen)))
 
 				case Lexer.TokenType.CloseParen =>
-					parser.leave
-					if(!inArgs) {
-						return parser.handle(tok)
+					if(inArgs) {
+						parser.leave
+					} else {
+						throw ParseException("")
 					}
 
 				case _ =>
