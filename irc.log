@@ -35,3 +35,84 @@
 <@cpup> nested block comments is a good idea
 <@cpup> how could cascading be implemented in Poland?
 <@cpup> Poland can't quite match other languages for arrays
+@cpup> hmm
+<cbot-gh> [poland-scala] none pushed 3 new commits to master: http://git.io/wkqo8w
+<cbot-gh> poland-scala/master 1338092 CoderPuppy: Rework nil, Fix getting slots by Userdata, Make PNil not be callable, Add the ability to specify a runtime for the Send, Cache symbols
+<cbot-gh> poland-scala/master d86bcc5 CoderPuppy: Make the Parser less derpy, I don't know what I was thinking when I wrote it
+<cbot-gh> poland-scala/master 207e852 CoderPuppy: Add an Interpreter
+<@cpup> i wonder if rubinius could work for poland
+<@cpup> poland is just a hack
+<@cpup> which is what makes it fun
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/Qo6DdA
+<cbot-gh> poland-scala/master 73a89d6 CoderPuppy: Add MessageSeq.eval
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/KU-RQQ
+<cbot-gh> poland-scala/master 91140a9 CoderPuppy: Combine root and ground for RootGround
+<cbot-gh> [poland-scala] none pushed 3 new commits to master: http://git.io/isg-fw
+<cbot-gh> poland-scala/master 207e852 CoderPuppy: Add an Interpreter
+<cbot-gh> poland-scala/master 73a89d6 CoderPuppy: Add MessageSeq.eval
+<cbot-gh> poland-scala/master 91140a9 CoderPuppy: Combine root and ground for RootGround
+<cbot-gh> [poland-scala] none pushed 3 new commits to master: http://git.io/isg-fw
+<cbot-gh> poland-scala/master 207e852 CoderPuppy: Add an Interpreter
+<cbot-gh> poland-scala/master 73a89d6 CoderPuppy: Add MessageSeq.eval
+<cbot-gh> poland-scala/master 91140a9 CoderPuppy: Combine root and ground for RootGround
+<cbot-gh> [poland-scala] none pushed 3 new commits to master: http://git.io/isg-fw
+<cbot-gh> poland-scala/master 207e852 CoderPuppy: Add an Interpreter
+<cbot-gh> poland-scala/master 73a89d6 CoderPuppy: Add MessageSeq.eval
+<cbot-gh> poland-scala/master 91140a9 CoderPuppy: Combine root and ground for RootGround
+<cbot-gh> [poland-scala] none pushed 3 new commits to master: http://git.io/isg-fw
+<cbot-gh> poland-scala/master 207e852 CoderPuppy: Add an Interpreter
+<cbot-gh> poland-scala/master 73a89d6 CoderPuppy: Add MessageSeq.eval
+<cbot-gh> poland-scala/master 91140a9 CoderPuppy: Combine root and ground for RootGround
+<@cpup> hmm
+<@cpup> the vm shouldn't depend on a certain name
+<@cpup> how can it not?
+<@cpup> meta to_s
+<@cpup> maybe?
+<@cpup> it's probably ok for only one language to be allowed
+<@cpup> at a time
+<@cpup> well english and some other language
+<@cpup> do functions need to be native?
+<@cpup> probably
+* cpup mumbles compiling... lambda calculus
+* cpup mumbles "compiling... lambda calculus"
+<@cpup> InstructionApplication?
+<@cpup> no
+<@cpup> (PRuntime, PObject, PObject) => PObject
+<@cpup> yeah
+<@cpup> there was a reason i wanted a name for it
+<@cpup> SendContext?
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/gpFxRw
+<cbot-gh> poland-scala/master ff89f12 CoderPuppy: Move stuff around to implement NativeInstruction, Remove TRuntime, Make Userdatas not override the PObject's id by default
+<@cpup> hmm
+<@cpup> how many redstone engines could fit in a chunk (with conduits and redstone)?
+<@cpup> do functions really need to be native?
+<cbot-gh> [poland-scala] CoderPuppy pushed 5 new commits to master: http://git.io/HP7gbw
+<cbot-gh> poland-scala/master 4e74366 CoderPuppy: Finish removing Userdata.id
+<cbot-gh> poland-scala/master a915876 CoderPuppy: Add PRawFunction (WIP)
+<cbot-gh> poland-scala/master 25c3d20 CoderPuppy: Make PRawFunction callable
+<@cpup> hmm
+<@cpup> PolandGround = should be different than Base =
+<@cpup> activatable
+<@cpup> i'll go with that
+<cbot-gh> [poland-scala] CoderPuppy pushed 3 new commits to master: http://git.io/19sp2Q
+<cbot-gh> poland-scala/master 2ae96e7 CoderPuppy: Fix parse errors
+<cbot-gh> poland-scala/master c3ed07d CoderPuppy: Rename Lexer.TokenPos.{row => line}
+<cbot-gh> poland-scala/master f03e64f CoderPuppy: More underping of the parser, Allow forward slashs in message sends
+<@cpup> i really need to rewrite the parser
+<@cpup> i don't know how it works
+<@cpup> well
+<@cpup> i sort of know
+<@cpup> but then there's just random stuff
+<@cpup> that i have no idea why it's there
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/_FVARw
+<cbot-gh> poland-scala/master 7768dd2 CoderPuppy: Underping the parser
+<@cpup> the lexer is derpy too
+<@cpup> :-(
+<@cpup> :(
+<@cpup> hm
+<cbot-gh> [poland-scala] CoderPuppy pushed 4 new commits to master: http://git.io/SEYrdA
+<cbot-gh> poland-scala/master 28eb907 CoderPuppy: Make InstructionSeq.apply take TInstructions
+<cbot-gh> poland-scala/master 1ac7f17 CoderPuppy: More underping of Parser
+<cbot-gh> poland-scala/master 4b7d4e1 CoderPuppy: Make PRuntime.createSymbol private and change PObject to account for that
+<@cpup> rawr
+<@cpup> names
