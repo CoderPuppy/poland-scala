@@ -8,7 +8,7 @@ import cpup.poland.runtime.userdata.PSymbol
 import cpup.poland.runtime.userdata.PString
 import scala.util.Random
 
-class PObject(val runtime: PRuntime) {
+class PObject(val runtime: BaseRuntime) {
 	final val objID = (getClass.getName, {
 		val arr = new ListBuffer[Char]()
 		for(i <- 0 until 12) {
@@ -25,7 +25,7 @@ class PObject(val runtime: PRuntime) {
 
 	override def toString = toString(runtime.root)
 	def toString(ground: PObject): String = toString(runtime, ground)
-	def toString(runtime: PRuntime, ground: PObject) = if(userdata == null) {
+	def toString(runtime: BaseRuntime, ground: PObject) = if(userdata == null) {
 		send(ground, "toString").userdata match {
 			case PString(text) => text
 			case _ => id
@@ -114,14 +114,14 @@ class PObject(val runtime: PRuntime) {
 	}
 	def send(ground: PObject, name: String): PObject = send(ground, name, List())
 
-	def send(runtime: PRuntime, name: PObject, args: Seq[PObject]): PObject = {
+	def send(runtime: BaseRuntime, name: PObject, args: Seq[PObject]): PObject = {
 		send(runtime.root, name, args)
 	}
-	def send(runtime: PRuntime, name: PObject): PObject = send(runtime, name, List())
-	def send(runtime: PRuntime, name: String, args: Seq[PObject]): PObject = {
+	def send(runtime: BaseRuntime, name: PObject): PObject = send(runtime, name, List())
+	def send(runtime: BaseRuntime, name: String, args: Seq[PObject]): PObject = {
 		send(runtime, runtime.getSymbol(runtime.root, name), args)
 	}
-	def send(runtime: PRuntime, name: String): PObject = send(runtime, name, List())
+	def send(runtime: BaseRuntime, name: String): PObject = send(runtime, name, List())
 
 	def send(name: PObject, args: PObject*): PObject = {
 		send(runtime, name, args)
@@ -130,7 +130,7 @@ class PObject(val runtime: PRuntime) {
 		send(runtime.getSymbol(runtime.root, name), args: _*)
 	}
 
-	def isCallable(runtime: PRuntime, ground: PObject) = if(userdata == null) {
+	def isCallable(runtime: BaseRuntime, ground: PObject) = if(userdata == null) {
 		send(runtime, runtime.getSymbol(ground, PSymbol("isCallable"))).toBoolean(runtime, ground)
 	} else {
 		userdata.isCallable
@@ -147,7 +147,7 @@ class PObject(val runtime: PRuntime) {
 		userdata.call(send)
 	}
 
-	def toBoolean(runtime: PRuntime, ground: PObject): Boolean = if(userdata == null || !userdata.isBoolean) {
+	def toBoolean(runtime: BaseRuntime, ground: PObject): Boolean = if(userdata == null || !userdata.isBoolean) {
 		send(runtime, runtime.getSymbol(ground, PSymbol("toBoolean"))).toBoolean(runtime, ground)
 	} else {
 		userdata.toBoolean

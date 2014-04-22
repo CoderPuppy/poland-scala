@@ -1,6 +1,6 @@
 package cpup.poland.runtime.userdata
 
-import cpup.poland.runtime.{PRuntime, PObject}
+import cpup.poland.runtime.{BaseRuntime, PObject}
 import cpup.poland.parser.Lexer
 
 class Message(var name: PObject, pos: Lexer.TokenPos, _args: InstructionSeq*) extends Userdata with TInstruction {

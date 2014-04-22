@@ -1,6 +1,6 @@
 package cpup.poland.runtime.userdata
 
-import cpup.poland.runtime.{PRuntime, PObject}
+import cpup.poland.runtime.{BaseRuntime, PObject}
 
 trait Userdata {
 	def objID(obj: PObject) = obj.objID
@@ -19,7 +19,7 @@ trait Userdata {
 		throw new RuntimeException("Attempt to call uncallable Userdata")
 	}
 
-	def createObject(runtime: PRuntime) = {
+	def createObject(runtime: BaseRuntime) = {
 		val obj = new PObject(runtime)
 		obj.userdata = this
 		obj

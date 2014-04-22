@@ -1,6 +1,6 @@
 package cpup.poland.runtime.userdata
 
-import cpup.poland.runtime.{PRuntime, PObject}
+import cpup.poland.runtime.{BaseRuntime, PObject}
 import cpup.poland.parser.Lexer
 
 case class Send(context: SendContext, seq: InstructionSeq, msg: Message) extends Userdata {

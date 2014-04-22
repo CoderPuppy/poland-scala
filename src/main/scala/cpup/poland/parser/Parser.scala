@@ -3,9 +3,9 @@ package cpup.poland.parser
 import cpup.poland.runtime.userdata.{Message, InstructionSeq, PSymbol, PString}
 import scala.collection.mutable
 import cpup.poland.parser.{TokenMatching => M}
-import cpup.poland.runtime.{PRuntime, PObject}
+import cpup.poland.runtime.{BaseRuntime, PObject}
 
-case class Parser(runtime: PRuntime, ground: PObject) {
+case class Parser(runtime: BaseRuntime, ground: PObject) {
 	var seq = new InstructionSeq
 	val stack = new mutable.Stack[Parser.Mode]
 
@@ -55,7 +55,7 @@ case class Parser(runtime: PRuntime, ground: PObject) {
 }
 
 object Parser {
-	def parse(runtime: PRuntime, ground: PObject, tokens: Seq[Lexer.Token]) = {
+	def parse(runtime: BaseRuntime, ground: PObject, tokens: Seq[Lexer.Token]) = {
 		val parser = new Parser(runtime, ground)
 		for(tok <- tokens) {
 			parser.handle(tok)
@@ -63,7 +63,7 @@ object Parser {
 		parser.done
 		parser.seq
 	}
-	def parse(runtime: PRuntime, tokens: Seq[Lexer.Token]): InstructionSeq = parse(runtime, runtime.root, tokens)
+	def parse(runtime: BaseRuntime, tokens: Seq[Lexer.Token]): InstructionSeq = parse(runtime, runtime.root, tokens)
 
 	sealed trait Mode {
 		def enter(parser: Parser) {}
