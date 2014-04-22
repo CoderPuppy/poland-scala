@@ -11,7 +11,7 @@ object TestPoland {
 		val runtime = new VanillaRuntime
 		println(s"Runtime: $runtime")
 
-		val tokens = Lexer.lex("println([]('Hello,', 'World!') join(' ') replace(/Hello/g, 'hi')", "test.pd")
+		val tokens = Lexer.lex("println([]('Hello,', 'World!') join(' ')", "test.pd")
 		println(s"Tokens: $tokens")
 
 		val seq = Parser.parse(runtime, runtime.Ground, tokens)
