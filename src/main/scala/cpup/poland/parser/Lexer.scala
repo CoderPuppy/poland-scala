@@ -21,7 +21,7 @@ case class Lexer(context: String, sugar: Boolean = true) {
 				P.MChar(' ')
 			)),
 			Lexer.MatcherMode(Lexer.TokenType.OpenParen, P.MChar('(')),
-			Lexer.MatcherMode(Lexer.TokenType.CloseParen, P.MChar(',')),
+			Lexer.MatcherMode(Lexer.TokenType.CloseParen, P.MChar(')')),
 			Lexer.MatcherMode(Lexer.TokenType.DoubleQuote, P.MChar('"')),
 			Lexer.MatcherMode(Lexer.TokenType.SingleQuote, P.MChar('\'')),
 			Lexer.MatcherMode(Lexer.TokenType.Reset, P.MChar('.'))

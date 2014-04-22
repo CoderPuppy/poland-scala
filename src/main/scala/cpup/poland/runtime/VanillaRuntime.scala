@@ -18,10 +18,10 @@ class VanillaRuntime extends BaseRuntime {
 			Ground,
 			InstructionSeq(
 				new NativeInstruction((context: SendContext) => {
-					println(context.ground.hints("send").userdata match {
-						case send: Send => send.msg.args(0).activate(context)
-						case _ => null
-					})
+//					println(context.ground.hints("send").userdata match {
+//						case send: Send => send.msg.args(0).activate(context)
+//						case _ => null
+//					})
 					nil
 				})
 			)

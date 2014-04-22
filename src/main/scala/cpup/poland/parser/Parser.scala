@@ -14,6 +14,8 @@ case class Parser(runtime: BaseRuntime, ground: PObject) {
 	enter(new Parser.BodyMode(seq))
 
 	def enter(newMode: Parser.Mode) {
+//		println(s"Entering mode: $newMode, from mode: $mode")
+
 		val oldMode = mode
 
 		stack.push(newMode)
@@ -30,6 +32,8 @@ case class Parser(runtime: BaseRuntime, ground: PObject) {
 	}
 
 	def leave {
+//		println(s"Leaving: $mode")
+
 		if(!stack.isEmpty) {
 			val oldMode = stack.pop
 
@@ -44,6 +48,7 @@ case class Parser(runtime: BaseRuntime, ground: PObject) {
 	def handle(token: Lexer.Token) = if(mode == null) {
 		false
 	} else {
+//		println(s"Handling token: $token in mode: $mode")
 		mode.handle(this, token)
 	}
 
@@ -186,7 +191,7 @@ object Parser {
 			child match {
 				case mode: StringMode =>
 					parser enter MsgMode(Message(
-						parser.runtime.createString(parser.ground, PString(mode.str)),
+						parser.runtime.getSymbol(parser.ground, mode.str),
 						mode.start.pos
 					))
 
@@ -294,12 +299,8 @@ object Parser {
 					inArgs = true
 					parser.enter(ListMode(msg.args, M.tokenType(Lexer.TokenType.CloseParen)))
 
-				case Lexer.TokenType.CloseParen =>
-					if(inArgs) {
-						parser.leave
-					} else {
-						throw ParseException("")
-					}
+				case Lexer.TokenType.CloseParen if inArgs =>
+					parser.leave
 
 				case _ =>
 					parser.leave
@@ -309,16 +310,9 @@ object Parser {
 			true
 		}
 
-		override def enter(parser: Parser) {
-			// TODO: hurah?
-//			if(instr.name.userdata.isInstanceOf[PString]) {
-//				inName = false
-//			}
-		}
-
 		override def leaveChild(parser: Parser, child: Mode) {
 			child match {
-				case StringMode(tokenType, str) =>
+				case StringMode(start, str) =>
 					if(inName && msg.name.userdata.isInstanceOf[PSymbol]) {
 						msg.name = parser.runtime.getSymbol(
 							parser.ground,
@@ -440,10 +434,10 @@ object Parser {
 				case `close` =>
 					if(first) {
 						// TODO: this is very specific to being used in a body
-						parser.leave
+						parser.stack.pop
 						parser.enter(MsgMode(msg))
 					}
-					parser.leave
+//					parser.leave // TODO: hurah?
 
 				case _ =>
 					parser.enter(ListMode(msg.args, M.MTokenType(close)))
