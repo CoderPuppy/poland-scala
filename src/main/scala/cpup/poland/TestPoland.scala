@@ -3,6 +3,8 @@ package cpup.poland
 import cpup.poland.parser.{Parser, Lexer}
 import cpup.poland.runtime.VanillaRuntime
 import cpup.poland.runtime.userdata.SendContext
+import scala.reflect.io
+import java.io.File
 
 object TestPoland {
 	def main(args: Array[String]) {
@@ -11,7 +13,8 @@ object TestPoland {
 		val runtime = new VanillaRuntime
 		println(s"Runtime: $runtime")
 
-		val tokens = Lexer.lex("println([]('Hello,', 'World!') join(' ')", "test.pd")
+		val file = new io.File(new File("test.pd")).slurp
+		val tokens = Lexer.lex(file, "test.pd")
 		println(s"Tokens: $tokens")
 
 		val seq = Parser.parse(runtime, runtime.Ground, tokens)
