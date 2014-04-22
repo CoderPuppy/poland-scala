@@ -1,1 +1,1 @@
-println(['Hello,', 'World!'] join(' ')
+println(['Hello,', 'World!'] join(' '))
