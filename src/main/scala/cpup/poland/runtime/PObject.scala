@@ -4,7 +4,6 @@ import cpup.poland.runtime.userdata._
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.util.control.Breaks
-import cpup.poland.runtime.userdata.PSymbol
 import cpup.poland.runtime.userdata.PString
 import scala.util.Random
 
@@ -24,8 +23,7 @@ class PObject(val runtime: BaseRuntime) {
 	}
 
 	override def toString = toString(runtime.root)
-	def toString(ground: PObject): String = toString(runtime, ground)
-	def toString(runtime: BaseRuntime, ground: PObject) = if(userdata == null) {
+	def toString(ground: PObject) = if(userdata == null) {
 		send(ground, "toString").userdata match {
 			case PString(text) => text
 			case _ => id
@@ -100,55 +98,43 @@ class PObject(val runtime: BaseRuntime) {
 	def receive(send: Send) = {
 		val obj = this(send.msg.name)
 
-		if(obj.isCallable(send.context.runtime, runtime.root)) {
-			obj.call(send)
+		if(obj.isActivatable) {
+			obj.activate(send)
 		} else { obj }
 	}
 
 	def send(ground: PObject, name: PObject, args: Seq[PObject]) = {
 		Send.fromObjs(ground, this, name, args: _*).send
 	}
-	def send(ground: PObject, name: PObject): PObject = send(ground, name, List())
-	def send(ground: PObject, name: String, args: Seq[PObject]): PObject = {
+	def send(ground: PObject, name: String, args: PObject*): PObject = {
+		// I'm using ground here because that's what you'd expect for syntactic sugar
 		send(ground, runtime.getSymbol(ground, name), args)
 	}
-	def send(ground: PObject, name: String): PObject = send(ground, name, List())
-
-	def send(runtime: BaseRuntime, name: PObject, args: Seq[PObject]): PObject = {
-		send(runtime.root, name, args)
-	}
-	def send(runtime: BaseRuntime, name: PObject): PObject = send(runtime, name, List())
-	def send(runtime: BaseRuntime, name: String, args: Seq[PObject]): PObject = {
-		send(runtime, runtime.getSymbol(runtime.root, name), args)
-	}
-	def send(runtime: BaseRuntime, name: String): PObject = send(runtime, name, List())
 
 	def send(name: PObject, args: PObject*): PObject = {
-		send(runtime, name, args)
+		send(runtime.root, name, args)
 	}
 	def send(name: String, args: PObject*): PObject = {
-		send(runtime.getSymbol(runtime.root, name), args: _*)
+		send(runtime.root, name, args: _*)
 	}
 
-	def isCallable(runtime: BaseRuntime, ground: PObject) = if(userdata == null) {
-		send(runtime, runtime.getSymbol(ground, PSymbol("isCallable"))).toBoolean(runtime, ground)
+	def isActivatable = if(userdata == null) {
+		send(PNames.isActivatable).toBoolean
 	} else {
-		userdata.isCallable
+		userdata.isActivatable
 	}
-	def call(send: Send) = if(userdata == null) {
+	def activate(send: Send) = if(userdata == null) {
 		this.send(
-			runtime,
-			runtime.getSymbol(runtime.root, PSymbol("call")),
-			List(
-				runtime.createSend(runtime.root, send)
-			)
+			send.context.ground,
+			PNames.call,
+			runtime.createSend(runtime.root, send) // TODO: Should I use ground here?
 		)
 	} else {
-		userdata.call(send)
+		userdata.activate(send)
 	}
 
-	def toBoolean(runtime: BaseRuntime, ground: PObject): Boolean = if(userdata == null || !userdata.isBoolean) {
-		send(runtime, runtime.getSymbol(ground, PSymbol("toBoolean"))).toBoolean(runtime, ground)
+	def toBoolean: Boolean = if(userdata == null || !userdata.isBoolean) {
+		send(PNames.toBoolean).toBoolean
 	} else {
 		userdata.toBoolean
 	}

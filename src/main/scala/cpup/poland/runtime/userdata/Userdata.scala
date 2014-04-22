@@ -14,8 +14,8 @@ trait Userdata {
 	def isBoolean = false
 	def toBoolean: Boolean = true
 
-	def isCallable: Boolean = false
-	def call(send: Send): PObject = {
+	def isActivatable: Boolean = false
+	def activate(send: Send): PObject = {
 		throw new RuntimeException("Attempt to call uncallable Userdata")
 	}
 

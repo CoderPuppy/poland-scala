@@ -46,7 +46,7 @@ class BaseRuntime {
 		}
 
 		val obj = new PObject(this)
-		ground.send(this, modifyObject, List(obj))
+		ground.send(modifyObject, obj)
 		obj
 	}
 
@@ -58,7 +58,7 @@ class BaseRuntime {
 
 		val obj = createObject(ground)
 		obj.userdata = userdata
-		ground.send(this, modifyUserdata, List(obj))
+		ground.send(modifyUserdata, obj)
 		obj
 	}
 
@@ -70,7 +70,7 @@ class BaseRuntime {
 
 		val obj = createUserdata(ground, sym)
 		ground(PSymbol(PNames.symbols))(sym) = obj
-		ground.send(this, modifySymbol, List(obj))
+		ground.send(modifySymbol, obj)
 		obj
 	}
 
@@ -86,31 +86,31 @@ class BaseRuntime {
 
 	def createString(ground: PObject, str: PString) = {
 		val obj = createUserdata(ground, str)
-		ground.send(this, getSymbol(ground, PSymbol(PNames.modifyString)), List(obj))
+		ground.send(PNames.modifyString, obj)
 		obj
 	}
 
 	def createMessage(ground: PObject, msg: Message) = {
 		val obj = createUserdata(ground, msg)
-		ground.send(this, getSymbol(ground, PSymbol(PNames.modifyMessage)), List(obj))
+		ground.send(PNames.modifyMessage, obj)
 		obj
 	}
 
 	def createInstructionSeq(ground: PObject, seq: InstructionSeq) = {
 		val obj = createUserdata(ground, seq)
-		ground.send(this, getSymbol(ground, PSymbol(PNames.modifyInstructionSeq)), List(obj))
+		ground.send(PNames.modifyInstructionSeq, obj)
 		obj
 	}
 
 	def createSend(ground: PObject, send: Send) = {
 		val obj = createUserdata(ground, send)
-		ground.send(this, getSymbol(ground, PSymbol(PNames.modifySend)), List(obj))
+		ground.send(PNames.modifySend, obj)
 		obj
 	}
 
 	def createRawFunction(ground: PObject, fn: PRawFunction) = {
 		val obj = createUserdata(ground, fn)
-		ground.send(this, getSymbol(ground, PSymbol(PNames.modifyRawFunction)), List(obj))
+		ground.send(PNames.modifyRawFunction, obj)
 		obj
 	}
 
@@ -119,13 +119,10 @@ class BaseRuntime {
 		obj.hints("fn") = fn.createObject(this)
 		obj.hints("send") = send.createObject(this)
 		ground.send(
-			this,
 			PNames.modifyCallGround,
-			List(
-				obj,
-				createRawFunction(ground, fn),
-				createSend(ground, send)
-			)
+			obj,
+			createRawFunction(ground, fn),
+			createSend(ground, send)
 		)
 		obj
 	}

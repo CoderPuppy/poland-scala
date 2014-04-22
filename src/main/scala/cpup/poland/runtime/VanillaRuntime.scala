@@ -13,7 +13,8 @@ class VanillaRuntime extends BaseRuntime {
 	val Something = Object.derive.deriveFrom(VanillaBehaviour)
 
 	PolandGround(PSymbol(PNames.modifySymbol)) = createRawFunction(
-		PolandGround, new PRawFunction(
+		root,
+		new PRawFunction(
 			Ground,
 			InstructionSeq(
 				new NativeInstruction((context: SendContext) => {
