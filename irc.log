@@ -116,3 +116,23 @@
 <cbot-gh> poland-scala/master 4b7d4e1 CoderPuppy: Make PRuntime.createSymbol private and change PObject to account for that
 <@cpup> rawr
 <@cpup> names
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/52bbVA
+<cbot-gh> poland-scala/master 417a311 CoderPuppy: Rename PRuntime to BaseRuntime, RootGround to VanillaRuntime and Make VanillaRuntime extend BaseRuntime
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/Yw9FEg
+<cbot-gh> poland-scala/master 1ee24a8 CoderPuppy: Move BaseRuntime.Names to PNames, Add PTrue and PFalse and Start implementing higher level stuff
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/gqModQ
+<cbot-gh> poland-scala/master 9bea51e CoderPuppy: Simplifying stuff (removing ground and runtime parameters) and Rename call to activate and isCallable to isActivatable
+<@cpup> hmm
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/7h1F-A
+<cbot-gh> poland-scala/master 6c34968 CoderPuppy: Update irc.log
+<@cpup> irc.log can't be up to date
+<cbot-gh> [poland-scala] CoderPuppy pushed 2 new commits to master: http://git.io/Qok3qw
+<cbot-gh> poland-scala/master f2c2c61 CoderPuppy: Don't handle exceptions for lexer modes
+<cbot-gh> poland-scala/master 8a31ec9 CoderPuppy: Debugging, Fix the Lexer missing CloseParens, Fix strings starting message sends, Remove a derp I figured out, Fix WrapperMode
+<@cpup> i should pull the test program out into a file
+<cbot-gh> [poland-scala] CoderPuppy pushed 3 new commits to master: http://git.io/2nADNg
+<cbot-gh> poland-scala/master 916fcf1 CoderPuppy: Change the test program
+<cbot-gh> poland-scala/master 6725ad4 CoderPuppy: Simplify the test program
+<cbot-gh> poland-scala/master d3797e6 CoderPuppy: Move the test program to test.pd
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/dtmd-Q
+<cbot-gh> poland-scala/master 98ff7b6 CoderPuppy: How did that go missing?
