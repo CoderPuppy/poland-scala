@@ -14,10 +14,10 @@ object TestPoland {
 		val tokens = Lexer.lex("println('Hello, World!' replace(/Hello/g, 'hi')", "test.pd")
 		println(s"Tokens: $tokens")
 
-		val seq = Parser.parse(runtime, runtime.ground, tokens)
+		val seq = Parser.parse(runtime, runtime.Ground, tokens)
 		println(s"Seq: $seq")
 
-		val result = seq.activate(SendContext(runtime.ground, runtime.ground))
+		val result = seq.activate(SendContext(runtime.Ground, runtime.Ground))
 		println(s"Result: $result")
 
 		println("Test Completed")

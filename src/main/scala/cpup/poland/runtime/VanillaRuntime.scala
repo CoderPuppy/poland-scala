@@ -5,12 +5,16 @@ import cpup.poland.runtime.userdata.NativeInstruction
 import cpup.poland.runtime.userdata.PSymbol
 
 class VanillaRuntime extends BaseRuntime {
-	val polandGround = root
-	val ground = polandGround.derive
+	val PolandGround = root
+	val Ground = PolandGround.derive
 
-	polandGround(PSymbol(BaseRuntime.Names.modifySymbol)) = createRawFunction(
-		polandGround, new PRawFunction(
-			ground,
+	val Object = new PObject(this) // TODO: better name for Object and Something
+	val VanillaBehaviour = new PObject(this)
+	val Something = Object.derive.deriveFrom(VanillaBehaviour)
+
+	PolandGround(PSymbol(PNames.modifySymbol)) = createRawFunction(
+		PolandGround, new PRawFunction(
+			Ground,
 			InstructionSeq(
 				new NativeInstruction((context: SendContext) => {
 					println(context.ground.hints("send").userdata match {
@@ -23,5 +27,12 @@ class VanillaRuntime extends BaseRuntime {
 		)
 	)
 
-	initSymbols(polandGround)
+	// Add all the objects to Ground
+	Ground(PSymbol("PolandGround")) = PolandGround
+	Ground(PSymbol("Object")) = Object
+	Ground(PSymbol("VanillaBehavior")) = VanillaBehaviour
+	Ground(PSymbol("Something")) = Something
+	Ground(PSymbol("Ground")) = Ground
+
+	initSymbols(PolandGround)
 }
