@@ -116,13 +116,7 @@ case class Lexer(context: String, sugar: Boolean = true) {
 	def emit(token: Lexer.Token) {
 		tokens += token
 		for(handler <- handlers) {
-			try {
-				handler(token)
-			} catch {
-				case e: Throwable =>
-					// TODO: Logging
-					e.printStackTrace
-			}
+			handler(token)
 		}
 	}
 }
