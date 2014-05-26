@@ -22,7 +22,7 @@ class BaseRuntime {
 		PNames.modifyUserdata,
 		PNames.modifyCallGround,
 		PNames.nil
-	) ++ (0 to 10).map((i) => s"${Send.name}:sendobjs:$i")
+	)
 
 	def initSymbols(ground: PObject) {
 		val symbols = ground(PSymbol(PNames.symbols))
