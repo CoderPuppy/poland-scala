@@ -43,7 +43,7 @@ class PObject(val runtime: BaseRuntime) {
 		newUserdata
 	}
 
-	val hints = new mutable.HashMap[String, PObject]()
+	val hints = new mutable.HashMap[String, Any]()
 
 	val slots = new mutable.HashMap[String, PObject]
 	val sources = new ListBuffer[PObject]

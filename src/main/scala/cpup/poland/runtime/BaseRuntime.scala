@@ -116,8 +116,8 @@ class BaseRuntime {
 
 	def createCallGround(ground: PObject, fn: PRawFunction, send: Send) = {
 		val obj = createObject(ground)
-		obj.hints("fn") = fn.createObject(this)
-		obj.hints("send") = send.createObject(this)
+		obj.hints("fn") = fn
+		obj.hints("send") = send
 		ground.send(
 			PNames.modifyCallGround,
 			obj,

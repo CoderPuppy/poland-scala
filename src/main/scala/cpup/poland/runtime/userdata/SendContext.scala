@@ -1,6 +1,6 @@
 package cpup.poland.runtime.userdata
 
-import cpup.poland.runtime.{PObject, BaseRuntime}
+import cpup.poland.runtime.PObject
 
 case class SendContext(ground: PObject, receiver: PObject) extends Userdata {
 	val runtime = ground.runtime

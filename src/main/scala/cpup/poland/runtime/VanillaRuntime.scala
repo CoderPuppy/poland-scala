@@ -13,15 +13,33 @@ class VanillaRuntime extends BaseRuntime {
 	val Something = Object.derive.deriveFrom(VanillaBehaviour)
 
 	PolandGround(PSymbol(PNames.modifySymbol)) = createRawFunction(
-		root,
+		Ground,
 		new PRawFunction(
 			Ground,
 			InstructionSeq(
 				new NativeInstruction((context: SendContext) => {
-					println(context.ground.hints("send").userdata match {
+					println(context.ground.hints("send") match {
 						case send: Send => send.msg.args(0).activate(context)
 						case _ => null
 					})
+					nil
+				})
+			)
+		)
+	)
+	PolandGround(PSymbol("print")) = createRawFunction(
+		Ground,
+		new PRawFunction(
+			Ground,
+			InstructionSeq(
+				new NativeInstruction((context) => {
+					// TODO: userdata casting (get a Send from it or else raise a condition)
+					println(context.ground.hints)
+					context.ground.hints("send") match {
+						case send: Send =>
+							println(send.msg.args(0).activate(context))
+						case _ =>
+					}
 					nil
 				})
 			)
