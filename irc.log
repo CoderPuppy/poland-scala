@@ -136,3 +136,12 @@
 <cbot-gh> poland-scala/master d3797e6 CoderPuppy: Move the test program to test.pd
 <cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/dtmd-Q
 <cbot-gh> poland-scala/master 98ff7b6 CoderPuppy: How did that go missing?
+<@cpup> why did i have hints be PObjects?
+<@cpup> shouldn't they be like anything
+<cbot-gh> [poland-scala] CoderPuppy pushed 1 new commit to master: http://git.io/KBKm7w
+<cbot-gh> poland-scala/master 63d2df5 CoderPuppy: Working on print and Convert PObject.hints to be any objects
+<@cpup> hmm
+<@cpup> crazy ideas
+<@cpup> eses
+<@cpup> uh
+<@cpup> to overwrite the meta function you have to implement a scala trait
