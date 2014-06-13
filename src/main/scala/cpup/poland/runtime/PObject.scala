@@ -95,12 +95,24 @@ class PObject(val runtime: BaseRuntime) {
 		newVal
 	}
 
-	def receive(send: Send) = {
-		val obj = this(send.msg.name)
+	type MetaFn = (Send, PObject) => Option[PObject]
 
-		if(obj.isActivatable) {
-			obj.activate(send)
-		} else { obj }
+	var metaFn: MetaFn = null
+
+	def receive(send: Send) = receiveImpl(send).getOrElse(send.context.runtime.nil)
+	def receiveImpl(send: Send): Option[PObject] = if(metaFn == null) {
+		var res: Option[PObject] = None
+		Breaks.breakable {
+			for(src <- sources) {
+				src.receiveImpl(send).foreach((obj) => {
+					res = Some(obj)
+					Breaks.break
+				})
+			}
+		}
+		res
+	} else {
+		metaFn(send, this)
 	}
 
 	def send(ground: PObject, name: PObject, args: Seq[PObject]) = {

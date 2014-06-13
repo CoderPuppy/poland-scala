@@ -11,6 +11,8 @@ class BaseRuntime {
 	val pfalse = PFalse.createObject(this)
 	val symbols = new PObject(this)
 
+	root.metaFn = BasicMetaFn
+
 	root(PSymbol(PNames.nil)) = nil
 	root(PSymbol("true")) = ptrue
 	root(PSymbol("false")) = pfalse
@@ -89,6 +91,13 @@ class BaseRuntime {
 		ground.send(PNames.modifyString, obj)
 		obj
 	}
+
+	def createNumber(ground: PObject, num: PNumber) = {
+		val obj = createUserdata(ground, num)
+		ground.send(PNames.modifyNumber, obj)
+		obj
+	}
+	def createNumber(ground: PObject, num: Double): PObject = createNumber(ground, PNumber(num))
 
 	def createMessage(ground: PObject, msg: Message) = {
 		val obj = createUserdata(ground, msg)

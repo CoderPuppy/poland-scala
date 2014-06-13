@@ -1,2 +1,2 @@
 # print(['Hello,', 'World!'] join(' '))
-print('Hello, World!')
+write('Hello, World!\n')

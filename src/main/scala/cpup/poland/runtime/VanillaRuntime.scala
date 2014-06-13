@@ -12,32 +12,35 @@ class VanillaRuntime extends BaseRuntime {
 	val VanillaBehaviour = new PObject(this)
 	val Something = Object.derive.deriveFrom(VanillaBehaviour)
 
-	PolandGround(PSymbol(PNames.modifySymbol)) = createRawFunction(
-		Ground,
-		new PRawFunction(
-			Ground,
-			InstructionSeq(
-				new NativeInstruction((context: SendContext) => {
-					println(context.ground.hints("send") match {
-						case send: Send => send.msg.args(0).activate(context)
-						case _ => null
-					})
-					nil
-				})
-			)
-		)
-	)
-	PolandGround(PSymbol("print")) = createRawFunction(
+	PolandGround.metaFn = LiteralsMetaFn(PolandGround.metaFn)
+//	PolandGround(PSymbol(PNames.modifySymbol)) = createRawFunction(
+//		Ground,
+//		new PRawFunction(
+//			Ground,
+//			InstructionSeq(
+//				new NativeInstruction((context: SendContext) => {
+//					println(context.ground.hints("send") match {
+//						case send: Send =>
+//							send.msg.args(0).activate(context)
+//						case _ => null
+//					})
+//					nil
+//				})
+//			)
+//		)
+//	)
+	PolandGround(PSymbol("write")) = createRawFunction(
 		Ground,
 		new PRawFunction(
 			Ground,
 			InstructionSeq(
 				new NativeInstruction((context) => {
 					// TODO: userdata casting (get a Send from it or else raise a condition)
-					println(context.ground.hints)
+//					println(context.ground.hints)
 					context.ground.hints("send") match {
 						case send: Send =>
-							println(send.msg.args(0).activate(context))
+							val callerContext = send.context
+							print(send.msg.args(0).activate(callerContext).toString(context.ground))
 						case _ =>
 					}
 					nil

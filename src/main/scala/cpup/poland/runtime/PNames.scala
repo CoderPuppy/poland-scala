@@ -6,6 +6,7 @@ object PNames {
 	def modifyUserdata = "internal:modify-userdata"
 	def modifySymbol = "internal:modify-symbol"
 	def modifyString = "internal:modify-string"
+	def modifyNumber = "internal:modify-number"
 	def modifyMessage = "internal:modify-message"
 	def modifyInstructionSeq = "internal:modify-instruction-seq"
 	def modifySend = "internal:modify-send"
