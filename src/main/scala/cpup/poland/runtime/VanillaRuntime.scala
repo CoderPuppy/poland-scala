@@ -35,15 +35,15 @@ class VanillaRuntime extends BaseRuntime {
 			Ground,
 			InstructionSeq(
 				new NativeInstruction((context) => {
-					// TODO: userdata casting (get a Send from it or else raise a condition)
-//					println(context.ground.hints)
 					context.ground.hints("send") match {
 						case send: Send =>
 							val callerContext = send.context
-							print(send.msg.args(0).activate(callerContext).toString(context.ground))
+							val v = send.msg.args(0).activate(callerContext)
+							print(v.toString(context.ground))
+							v
 						case _ =>
+							nil
 					}
-					nil
 				})
 			)
 		)
