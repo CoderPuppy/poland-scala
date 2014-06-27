@@ -27,27 +27,32 @@ class ParsingSpec extends FreeSpec with BeforeAndAfter {
 
 	"Lexing" - {
 		"an identifier" - {
-			"should return a single ID" in {
+			"should return a single token" in {
 				val tokens = lex("identifier")
 				assertVal(1) { tokens.length }
-				val token = tokens(0)
+			}
+
+			"should return an ID" in {
+				val token = lex("identifier")(0)
 				assertVal(Lexer.TokenType.ID) { token.tokenType }
 				assertVal("identifier") { token.text }
 			}
 
 			"should return the correct position" in {
-				val tokens = Lexer.lex("identifier", "ParsingSpec")
-				assertVal(1) { tokens.length }
-				val token = tokens(0)
+				val token = lex("identifier")(0)
 				assertVal(Lexer.TokenPos("ParsingSpec", 0, 0, 0)) { token.pos }
 			}
 		}
 	}
 	"Parsing" - {
 		"an identifier" - {
-			"should return a single parameter-less message" in {
+			"should return a single instruction" in {
 				val seq = parse("identifier")
 				assertVal(1) { seq.length }
+			}
+
+			"should return a single parameter-less message" in {
+				val seq = parse("identifier")
 				val msg = assertType[Message](seq(0))
 				val name = assertType[PSymbol](msg.name.userdata)
 				assertVal("identifier") { name.text }
@@ -55,10 +60,13 @@ class ParsingSpec extends FreeSpec with BeforeAndAfter {
 			}
 		}
 		"an identifier with empty parens" - {
-			"should return a single parameter-less message" in {
+			"should return a single instruction" in {
 				val seq = parse("identifier()")
 				assertVal(1) { seq.length }
-				val msg = assertType[Message](seq(0))
+			}
+
+			"should return a single parameter-less message" in {
+				val msg = assertType[Message](parse("identifier()")(0))
 				val name = assertType[PSymbol](msg.name.userdata)
 				assertVal("identifier") { name.text }
 				assertVal(0) { msg.args.length }
