@@ -1,0 +1,12 @@
+NativeMirror
+	createArray(elems)
+	createRawFunction(src)
+
+Sugar
+	fn(arg,) { src }
+	| \arg = raw arg
+	| arg... = splat
+	[ elems ]
+
+some message at the end of the sequence
+shuffle stuff at specific points if necessary (e.g. maps)
