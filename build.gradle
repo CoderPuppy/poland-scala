@@ -7,10 +7,15 @@ ext {
 			'cpup.lib:cpup-lib:dev'
 		]
 	]
+}
 
-	versions = [
-		scala: '2.10.3'
-	]
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'com.github.maiflai:gradle-scalatest:0.4'
+	}
 }
 
 apply plugin: 'java'
@@ -27,7 +32,13 @@ dependencies {
 }
 
 apply plugin: 'scala'
-dependencies.compile "org.scala-lang:scala-library:$versions.scala"
+ext.scalaVersion = '2.10.4'
+dependencies.compile "org.scala-lang:scala-library:$scalaVersion"
+dependencies.compile "org.scala-lang:scala-reflect:$scalaVersion"
+
+apply plugin: 'scalatest'
+dependencies.testCompile "org.scalatest:scalatest_2.10:2.2.0"
+dependencies.testRuntime "org.pegdown:pegdown:1.1.0"
 
 apply plugin: 'maven'
 apply plugin: 'idea'
