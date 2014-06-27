@@ -1,12 +1,8 @@
 package cpup.poland.runtime.userdata
 
-import cpup.poland.runtime.{PObject, BaseRuntime}
+import cpup.poland.runtime.PObject
 
 class InstructionSeq(_instrs: TInstruction*) extends Userdata {
-	def foreach[R](f: (TInstruction) => R) {
-		instrs.foreach(f)
-	}
-
 	var instrs = _instrs.toBuffer
 
 	def add(instr: TInstruction) {
@@ -26,6 +22,13 @@ class InstructionSeq(_instrs: TInstruction*) extends Userdata {
 	}
 
 	def activate(context: SendContext): PObject = activate(context, this)
+
+	def length = instrs.length
+	def size = instrs.size
+	def apply(i: Int) = instrs(i)
+	def foreach[R](f: (TInstruction) => R) {
+		instrs.foreach(f)
+	}
 }
 object InstructionSeq {
 	def apply(instrs: TInstruction*) = new InstructionSeq(instrs: _*)
