@@ -400,7 +400,7 @@ object Parser {
 				case Lexer.TokenType.Comma =>
 					val seq = new InstructionSeq
 					list += seq
-					parser enter BodyMode(seq, M.MOr(stopOn, M.MTokenType(Lexer.TokenType.Comma)))
+					parser.enter(BodyMode(seq, M.MOr(stopOn, M.MTokenType(Lexer.TokenType.Comma))))
 
 				case _ =>
 					if(list.size == 0) {
