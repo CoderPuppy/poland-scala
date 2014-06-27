@@ -127,6 +127,7 @@ object Lexer {
 		for(char <- str) {
 			lexer.handle(char)
 		}
+		lexer.leave
 		lexer.tokens.toList
 	}
 
