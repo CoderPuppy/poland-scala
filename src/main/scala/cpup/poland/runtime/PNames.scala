@@ -2,6 +2,7 @@ package cpup.poland.runtime
 
 object PNames {
 	def symbols = "internal:symbols"
+	def endSeq = "internal:end-seq"
 	def modifyObject = "internal:modify-object"
 	def modifyUserdata = "internal:modify-userdata"
 	def modifySymbol = "internal:modify-symbol"
