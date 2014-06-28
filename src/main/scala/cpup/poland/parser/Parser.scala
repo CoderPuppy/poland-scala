@@ -432,8 +432,10 @@ object Parser {
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			tok.tokenType match {
 				case `close` =>
+					// this is so if you want to invoke this normally it falls back to MsgMode
 					if(first) {
 						// TODO: this is very specific to being used in a body
+						// this is so the message isn't added when falling back
 						parser.stack.pop
 						parser.enter(MsgMode(msg))
 					}
