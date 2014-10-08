@@ -3,7 +3,7 @@ package cpup.poland.runtime.userdata
 import cpup.poland.runtime.{BaseRuntime, PObject}
 import cpup.poland.parser.Lexer
 
-class Message(var name: PObject, pos: Lexer.TokenPos, _args: InstructionSeq*) extends Userdata with TInstruction {
+class Message(var name: PObject, var pos: Lexer.TokenPos, _args: InstructionSeq*) extends Userdata with TInstruction {
 	var args = _args.toBuffer
 
 	override def toString = s"${name.toString}(${args.mkString(", ")})"

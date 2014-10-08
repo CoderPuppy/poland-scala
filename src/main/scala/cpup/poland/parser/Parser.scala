@@ -3,7 +3,7 @@ package cpup.poland.parser
 import cpup.poland.runtime.userdata.{Message, InstructionSeq, PSymbol, PString}
 import scala.collection.mutable
 import cpup.poland.parser.{TokenMatching => M}
-import cpup.poland.runtime.{BaseRuntime, PObject}
+import cpup.poland.runtime.{PNames, BaseRuntime, PObject}
 
 case class Parser(runtime: BaseRuntime, ground: PObject) {
 	var seq = new InstructionSeq
@@ -89,8 +89,7 @@ object Parser {
 
 		def handle(parser: Parser, tok: Lexer.Token): Boolean = {
 			if(stopOn.check(tok)) {
-				parser.leave
-				return parser.handle(tok)
+				return leave(parser, tok)
 			}
 
 			if(lastWasSlash && tok.tokenType != Lexer.TokenType.LineCommentBegin) {
@@ -179,12 +178,47 @@ object Parser {
 				case Lexer.TokenType.OpenCurly =>
 					parser enter WrapperMode(tok, Lexer.TokenType.CloseCurly, "{}")
 
-				case _ =>
-					parser.leave
-					return parser.handle(tok)
+				case _ => return leave(parser, tok)
 			}
 
 			true
+		}
+
+		def leave(parser: Parser, tok: Lexer.Token) = {
+//			seq.add(Message(parser.runtime.getSymbol(parser.ground, PNames.endSeq), tok.pos))
+			parser.leave
+			parser.handle(tok)
+		}
+
+		override def leave(parser: Parser) {
+//			if(seq.length >= 1) {
+//				val instr = seq(seq.length - 1)
+//				instr match {
+//					case Message(name, args) if args.isEmpty =>
+//						name.userdata match {
+//							case PSymbol(sName) if sName == PNames.endSeq =>
+//								return
+//							case _ => false
+//						}
+//					case _ =>
+//				}
+//			}
+
+			val fakePos = Lexer.TokenPos(getClass.getName, 0, 0, 0)
+
+			val pos = if(seq.length >= 1) {
+				seq(seq.length - 1) match {
+					case msg: Message =>
+						msg.pos
+				}
+			} else {
+				fakePos
+			}
+
+			seq.add(Message(
+				parser.runtime.getSymbol(parser.ground, PNames.endSeq),
+				pos
+			))
 		}
 
 		override def leaveChild(parser: Parser, child: Mode){

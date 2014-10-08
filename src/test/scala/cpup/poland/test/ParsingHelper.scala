@@ -2,6 +2,7 @@ package cpup.poland.test
 
 import cpup.poland.runtime.userdata.{PSymbol, Message, TInstruction, InstructionSeq}
 import cpup.poland.parser.{Parser, Lexer}
+import cpup.poland.runtime.PNames
 
 trait ParsingHelper extends Helper with PolandHelper with LexingHelper {
 	def parse(text: String): InstructionSeq = parse(lex(text))
@@ -13,5 +14,11 @@ trait ParsingHelper extends Helper with PolandHelper with LexingHelper {
 			assertType[PSymbol](msg.name.userdata).text
 		}
 		assertResult(args) { msg.args.length }
+		fn(msg)
+	}
+
+	def assertEndSeq(seq: InstructionSeq) {
+		assert(seq.length > 0)
+		assertMessage(seq(seq.length - 1), PNames.endSeq, 0)
 	}
 }

@@ -8,5 +8,5 @@ Sugar
 	| arg... = splat
 	[ elems ]
 
-some message at the end of the sequence
+some message at the end of the sequence -- DONE!!!!!
 shuffle stuff at specific points if necessary (e.g. maps)
